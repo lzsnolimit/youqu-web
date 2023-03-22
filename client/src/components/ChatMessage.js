@@ -7,6 +7,7 @@ import remarkGfm from 'remark-gfm'
 import moment from 'moment'
 import Image from './Image'
 
+
 /**
  * A chat message component that displays a message with a timestamp and an icon.
  *

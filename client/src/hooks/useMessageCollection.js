@@ -12,7 +12,9 @@ const useMessageCollection = () => {
     text: '**Hello!** *How can I help you today?*',
     ai: true
   }
-  const [messages, setMessages] = useState([initialMsg]);
+  const storedMessages = JSON.parse(localStorage.getItem('messages') || '[]')
+  storedMessages.push(initialMsg)
+  const [messages, setMessages] = useState(storedMessages);
 
   /**
   * A function for adding a new message to the collection.

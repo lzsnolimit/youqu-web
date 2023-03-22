@@ -28,7 +28,7 @@ const ChatView = () => {
    * @param {string} newValue - The text of the new message.
    * @param {boolean} [ai=false] - Whether the message was sent by an AI or the user.
    */
-  const updateMessage = (newValue, ai = false, selected) => {
+  const updateMessage = (newValue, selected,ai = false,requestType="text",reponseType="text") => {
     const id = Date.now() + Math.floor(Math.random() * 1000000)
     const newMsg = {
       id: id,
@@ -39,6 +39,9 @@ const ChatView = () => {
     }
 
     addMessage(newMsg)
+    const storedMessages = JSON.parse(localStorage.getItem('messages') || '[]')
+    storedMessages.push(newMsg)
+    localStorage.setItem('messages', JSON.stringify(storedMessages))
   }
 
   /**
@@ -53,21 +56,26 @@ const ChatView = () => {
     const aiModel = selected
 
     const BASE_URL = process.env.REACT_APP_BASE_URL
-    const PATH = aiModel === options[0] ? 'davinci' : 'dalle'
+    const PATH = aiModel === options[0] ? 'chat' : 'dalle'
     const POST_URL = BASE_URL + PATH
 
     setThinking(true)
     setFormValue('')
-    updateMessage(newMsg, false, aiModel)
+    updateMessage(newMsg, aiModel, false)
 
     const response = await fetch(POST_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
+        "dataType": "json",
       },
       body: JSON.stringify({
-        prompt: newMsg,
-      })
+        msg: newMsg,
+        "id": "23de6e55-77b5-4d3d-b7de-ee4f7644f24a",
+        "response_type":"text",
+        "request_type":"text"
+      }),
+      credentials: 'include'
     })
 
     const data = await response.json()
@@ -75,7 +83,8 @@ const ChatView = () => {
     console.log(response.status)
     if (response.ok) {
       // The request was successful
-      data.bot && updateMessage(data.bot, true, aiModel)
+      data.result && updateMessage(data.result, aiModel, true)
+
     } else if (response.status === 429) {
       setThinking(false)
     } else {
@@ -103,6 +112,13 @@ const ChatView = () => {
     inputRef.current.focus()
   }, [])
 
+  const initRows = 2;
+  const maxTextAreaHeight = 130;
+  const adjustHeight = (e) => {
+    e.target.style.height = 'auto';
+    e.target.style.height = Math.min(e.target.scrollHeight, maxTextAreaHeight) + 'px';
+  };
+
   return (
     <div className="chatview">
       <main className='chatview__chatarea'>
@@ -120,7 +136,15 @@ const ChatView = () => {
           <option>{options[0]}</option>
           <option>{options[1]}</option>
         </select>
-        <textarea ref={inputRef} className='chatview__textarea-message' value={formValue} onChange={(e) => setFormValue(e.target.value)} />
+        <textarea ref={inputRef} rows={initRows} className='chatview__textarea-message' value={formValue} onChange={(e) => {
+          setFormValue(e.target.value);
+          adjustHeight(e);
+        }} onKeyDown={(e) => {
+          if (e.shiftKey && e.keyCode === 13) {
+            e.preventDefault()
+            sendMessage(e)
+          }
+        }} />
         <button type="submit" className='chatview__btn-send' disabled={!formValue}>Send</button>
       </form>
     </div>
