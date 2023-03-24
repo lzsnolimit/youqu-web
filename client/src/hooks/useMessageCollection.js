@@ -1,5 +1,5 @@
-import { useState } from 'react'
-
+import {useEffect, useState} from 'react'
+import {get, set, createStore,keys} from 'idb-keyval';
 /**
  * A custom hook for managing the conversation between the user and the AI.
  *
@@ -7,14 +7,38 @@ import { useState } from 'react'
  */
 const useMessageCollection = () => {
   const initialMsg = {
-    id: 1,
     createdAt: Date.now(),
-    text: '**Hello!** *How can I help you today?*',
+    content: '**Hello!** *How can I help you today?*',
     ai: true
   }
   const storedMessages = JSON.parse(localStorage.getItem('messages') || '[]')
-  storedMessages.push(initialMsg)
+  const store = new createStore("youqu.app", "messages");
+  useEffect(() => {
+    const loadMessages = async () => {
+
+      let storedMessages=[]
+      try {
+        const messageKeys = await keys(store);
+        storedMessages = await Promise.all(messageKeys.map((key) => get(key, store)));
+        //console.log(storedMessages)
+      } catch (error) {
+        console.error('Error fetching all messages:', error);
+        return [];
+      }
+
+
+      if (storedMessages === undefined) {
+        setMessages([initialMsg])
+      } else {
+        storedMessages.push(initialMsg)
+        setMessages(storedMessages);
+      }
+    }
+    loadMessages();
+  }, [])
+
   const [messages, setMessages] = useState(storedMessages);
+
 
   /**
   * A function for adding a new message to the collection.

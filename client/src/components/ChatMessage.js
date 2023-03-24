@@ -1,11 +1,8 @@
 import React from 'react'
-import { MdComputer, MdPersonOutline } from 'react-icons/md'
-import ReactMarkdown from 'react-markdown'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import remarkGfm from 'remark-gfm'
-import moment from 'moment'
-import Image from './Image'
+import {MdComputer, MdPersonOutline} from 'react-icons/md'
+import MessageText from "./MessageText";
+import MessageVoice from "./MessageVoice";
+import MessagePicture from "./MessagePicture";
 
 
 /**
@@ -14,41 +11,33 @@ import Image from './Image'
  * @param {Object} props - The properties for the component.
  */
 const ChatMessage = (props) => {
-  const { id, createdAt, text, ai = false, selected } = props.message
+    const {id, createdAt, content: content, ai = false, type} = props.message
 
-  return (
-    <div key={id} className={`${ai && 'flex-row-reverse'} message`}>
-      {
-        selected === 'DALL·E' && ai ?
-          <Image url={text} />
-          :
-          <div className='message__wrapper'>
-            <ReactMarkdown className={`message__markdown ${ai ? 'text-left' : 'text-right'}`}
-              children={text}
-              remarkPlugins={[[remarkGfm, { singleTilde: false }]]}
-              components={{
-                code({ node, inline, className, children, ...props }) {
-                  const match = /language-(\w+)/.exec(className || 'language-js')
-                  return !inline && match ? (
-                    <SyntaxHighlighter
-                      children={String(children).replace(/\n$/, '')}
-                      style={atomDark} language={match[1]} PreTag="div" {...props}
-                    />
-                  ) : (<code className={className} {...props}>{children} </code>)
-                }
-              }} />
-
-
-            <div className={`${ai ? 'text-left' : 'text-right'} message__createdAt`}>{moment(createdAt).fromNow()}</div>
-          </div>}
-
-      <div className="message__pic">
-        {
-          ai ? <MdComputer /> : <MdPersonOutline />
+    // 根据消息类型选择合适的组件进行渲染（图片、语音或文本）
+    const renderMessageContent = () => {
+        switch (type) {
+            case 'picture':
+                return <MessagePicture b64Content={content} />;
+            //data:image/png;base64,
+            case 'voice':
+                return <MessageVoice audioContent={content} />;
+            case 'text':
+            default:
+                //console.log("Content is"+props.message)
+                return <MessageText ai={ai} content={content} createdAt={createdAt} />;
         }
-      </div>
-    </div>
-  )
+    }
+
+    return (
+        <div key={id} className={`${ai && 'flex-row-reverse'} message`}>
+            {renderMessageContent()}
+            <div className="message__pic">
+                {
+                    ai ? <MdComputer/> : <MdPersonOutline/>
+                }
+            </div>
+        </div>
+    )
 }
 
 export default ChatMessage

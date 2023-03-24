@@ -6,7 +6,7 @@ import React from 'react'
  * @param {string} text - The source of the image to display.
  * @returns {JSX.Element} - A JSX element representing the image.
  */
-const Image = (props) => {
+const MessageImage = (props) => {
 
   return (
     <div className="message__wrapper">
@@ -14,4 +14,4 @@ const Image = (props) => {
     </div>)
 }
 
-export default Image
+export default MessageImage
