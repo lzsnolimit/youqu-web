@@ -17,14 +17,14 @@ const ChatMessage = (props) => {
     const renderMessageContent = () => {
         switch (type) {
             case 'picture':
-                return <MessagePicture b64Content={content} />;
+                return <MessagePicture b64Content={content}/>;
             //data:image/png;base64,
             case 'voice':
-                return <MessageVoice audioContent={content} />;
+                return <MessageVoice audioContent={content}/>;
             case 'text':
             default:
                 //console.log("Content is"+props.message)
-                return <MessageText ai={ai} content={content} createdAt={createdAt} />;
+                return <MessageText ai={ai} content={content} createdAt={createdAt}/>;
         }
     }
 

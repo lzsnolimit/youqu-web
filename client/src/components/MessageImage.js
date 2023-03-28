@@ -8,10 +8,13 @@ import React from 'react'
  */
 const MessageImage = (props) => {
 
-  return (
-    <div className="message__wrapper">
-      <img className='message__img' src={props.url} alt='dalle generated' loading='lazy' />
-    </div>)
+
+    console.log("Image coming")
+
+    return (
+        <div className="message__wrapper">
+            <img className='message__img' src={props.url} alt='dalle generated' loading='lazy'/>
+        </div>)
 }
 
 export default MessageImage

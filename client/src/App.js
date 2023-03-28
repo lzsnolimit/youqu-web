@@ -1,14 +1,14 @@
 import Home from './pages/Home'
-import { ChatContextProvider } from './context/chatContext'
+import {ChatContextProvider} from './context/chatContext'
 
 const App = () => {
-  return (
-    <ChatContextProvider>
-      <div>
-        <Home />
-      </div>
-    </ChatContextProvider >
-  )
+    return (
+        <ChatContextProvider>
+            <div>
+                <Home/>
+            </div>
+        </ChatContextProvider>
+    )
 }
 
 

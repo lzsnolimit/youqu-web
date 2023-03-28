@@ -1,14 +1,15 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
+import {atomDark} from 'react-syntax-highlighter/dist/esm/styles/prism'
 import remarkGfm from 'remark-gfm'
 import moment from "moment";
-const MessageText = ({ ai, content, createdAt }) => {
+
+const MessageText = ({ai, content, createdAt}) => {
     const isJson = (str) => {
-        try{
+        try {
             JSON.parse(str);
-        }catch (e){
+        } catch (e) {
             //Error
             //JSON is not okay
             return false;
@@ -17,11 +18,11 @@ const MessageText = ({ ai, content, createdAt }) => {
     }
     const parseContent = () => {
         console.log(content.result)
-        try{
+        try {
             const jsonObj = JSON.parse(content);
-            console.log("result:"+jsonObj)
+            console.log("result:" + jsonObj)
             return jsonObj.result;
-        }catch (e){
+        } catch (e) {
             console.log(e)
             //console.log("result:"+content)
             return content;
@@ -32,10 +33,10 @@ const MessageText = ({ ai, content, createdAt }) => {
         <div className="message__wrapper">
             <ReactMarkdown
                 className={`message__markdown ${ai ? 'text-left' : 'text-right'}`}
-                children={content.hasOwnProperty("result")?content.result:content}
-                remarkPlugins={[[remarkGfm, { singleTilde: false }]]}
+                children={content.hasOwnProperty("result") ? content.result : content}
+                remarkPlugins={[[remarkGfm, {singleTilde: false}]]}
                 components={{
-                    code({ node, inline, className, children, ...props }) {
+                    code({node, inline, className, children, ...props}) {
                         const match = /language-(\w+)/.exec(className || 'language-js');
                         return !inline && match ? (
                             <SyntaxHighlighter

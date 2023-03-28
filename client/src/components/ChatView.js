@@ -3,7 +3,7 @@ import ChatMessage from './ChatMessage'
 import {ChatContext} from '../context/chatContext'
 import Thinking from './Thinking'
 import {Button} from '@material-ui/core';
-import {get, set, createStore} from 'idb-keyval';
+import {createStore, set} from 'idb-keyval';
 
 
 /**
@@ -44,7 +44,7 @@ const ChatView = () => {
             type: `${type}`,
         };
         addMessage(newMsg);
-        console.log(messages)
+        //console.log(messages)
         set(Date.now(), newMsg, store)
             .then(() => {
                 console.log("Message saved to indexedDB");
@@ -90,7 +90,7 @@ const ChatView = () => {
                 msg: messageContent,
                 "id": "23de6e55-77b5-4d3d-b7de-ee4f7644f24a",
                 "response_type": responseSelected,
-                "request_type": requestSelected
+                "request_type": requestType
             }),
             credentials: 'include'
         })
@@ -149,13 +149,13 @@ const ChatView = () => {
                 <span ref={messagesEndRef}></span>
             </main>
             <form className='form' onSubmit={sendMessage}>
-                <select value={requestSelected} defaultValue={requestOptions[0]} title="Select request type"
-                        onChange={(e) => setRequestSelected(e.target.value)} className="dropdown">
-                    <option value={requestOptions[0]}>{requestOptions[0]}</option>
-                    <option value={requestOptions[1]}>{requestOptions[1]}</option>
-                    <option value={requestOptions[2]}>{requestOptions[2]}</option>
+                {/*<select value={requestSelected} defaultValue={requestOptions[0]} title="Select request type"*/}
+                {/*        onChange={(e) => setRequestSelected(e.target.value)} className="dropdown">*/}
+                {/*    <option value={requestOptions[0]}>{requestOptions[0]}</option>*/}
+                {/*    <option value={requestOptions[1]}>{requestOptions[1]}</option>*/}
+                {/*    <option value={requestOptions[2]}>{requestOptions[2]}</option>*/}
 
-                </select>
+                {/*</select>*/}
                 <select value={responseSelected} defaultValue={responseOptions[0]} title="Select response type"
                         onChange={(e) => setResponseSelected(e.target.value)} className="dropdown">
                     <option value={responseOptions[0]}>{responseOptions[0]}</option>
