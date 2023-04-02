@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 import {createStore, get, keys} from 'idb-keyval';
-import {COMMANDS, MESSAGE_TYPE} from '../common/constant'
+import {MESSAGE_TYPE} from '../common/constant'
 
 /**
  * A custom hook for managing the conversation between the user and the AI.

@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Button, Input} from 'antd';
-import {set} from "idb-keyval/dist/index";
 import {API_PATH, COMMANDS, MESSAGE_TYPE} from "../common/constant";
 import {useCookies} from "react-cookie";
 
