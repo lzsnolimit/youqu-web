@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react'
 import {createStore, get, keys} from 'idb-keyval';
+import {COMMANDS, MESSAGE_TYPE} from '../common/constant'
 
 /**
  * A custom hook for managing the conversation between the user and the AI.
@@ -9,14 +10,14 @@ import {createStore, get, keys} from 'idb-keyval';
 const useMessageCollection = () => {
     const initialMsg = {
         createdAt: Date.now(),
-        content: '**Hello!** *How can I help you today?*',
-        ai: true
+        content: '你好，我是话痨机器人，有什么问题你可以直接问我。另外你还可以发送"#菜单"查看我支持对指令。',
+        ai: true,
+        type:MESSAGE_TYPE.INTRODUCTION
     }
     const storedMessages = JSON.parse(localStorage.getItem('messages') || '[]')
     const store = new createStore("youqu.app", "messages");
     useEffect(() => {
         const loadMessages = async () => {
-
             let storedMessages = []
             try {
                 const messageKeys = await keys(store);

@@ -4,21 +4,26 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/eyucoder/chatgpt-clone"
+    "url": "https://github.com/lzsnolimit/youqu"
   },
   "author": {
     "name": "John Lu",
     "email": "lzsnolimit@gmail.com",
-    "url": "https://github.com/eyucoder"
+    "url": "https://github.com/lzsnolimit"
   },
   "dependencies": {
     "@material-ui/core": "^4.12.4",
+    "@material/textfield": "^14.0.0",
+    "antd": "5.3.3",
     "concurrently": "^7.6.0",
     "dexie": "^3.2.3",
     "dexie-react-hooks": "^1.1.3",
     "idb-keyval": "^6.2.0",
     "moment": "^2.29.4",
+    "ncp": "^2.0.0",
     "react": "^18.2.0",
+    "react-composition": "^0.2.2",
+    "react-cookie": "^4.1.1",
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
     "react-indexed-db": "^1.0.12",
@@ -31,9 +36,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:dev": "cross-env REACT_APP_ENV=development react-scripts start",
     "server": "nodemon ../server/server.js",
     "dev": "concurrently \"npm start\" \"npm run server\"",
     "build": "react-scripts build",
+    "build:prod": "cross-env REACT_APP_ENV=production react-scripts build",
+    "build:dev": "cross-env REACT_APP_ENV=development react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -56,6 +64,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",
+    "cross-env": "^7.0.3",
     "postcss": "^8.4.20",
     "tailwindcss": "^3.2.4"
   },

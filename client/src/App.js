@@ -1,7 +1,30 @@
 import Home from './pages/Home'
 import {ChatContextProvider} from './context/chatContext'
+import React, {useEffect} from 'react';
+import {useCookies} from 'react-cookie';
 
 const App = () => {
+    const [cookies, setCookie, removeCookie] = useCookies(['id','Authorization']);
+    useEffect(() => {
+
+        if (cookies.id == null) {
+            if (process.env.REACT_APP_ENV == "development"){
+                const uuid='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                    var r = Math.random() * 16 | 0,
+                        v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+                setCookie("id",uuid)
+            }
+            else {
+                removeCookie("id");
+                removeCookie("Authorization");
+                window.location.href = '/login';
+            }
+
+        }
+    }, [cookies]);
+
     return (
         <ChatContextProvider>
             <div>

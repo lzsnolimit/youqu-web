@@ -3,6 +3,7 @@ import {MdComputer, MdPersonOutline} from 'react-icons/md'
 import MessageText from "./MessageText";
 import MessageVoice from "./MessageVoice";
 import MessagePicture from "./MessagePicture";
+import {MESSAGE_TYPE} from '../common/constant';
 
 
 /**
@@ -16,12 +17,14 @@ const ChatMessage = (props) => {
     // 根据消息类型选择合适的组件进行渲染（图片、语音或文本）
     const renderMessageContent = () => {
         switch (type) {
-            case 'picture':
-                return <MessagePicture b64Content={content}/>;
+            case MESSAGE_TYPE.INTRODUCTION:
+                return <MessageText ai={ai} content={content} createdAt={createdAt}/>;
+            case MESSAGE_TYPE.PICTURE:
+                return <MessagePicture ai={ai} b64Content={content} createdAt={createdAt}/>;
             //data:image/png;base64,
-            case 'voice':
-                return <MessageVoice audioContent={content}/>;
-            case 'text':
+            case MESSAGE_TYPE.AUDIO:
+                return <MessageVoice ai={ai} audioContent={content} createdAt={createdAt}/>;
+            case MESSAGE_TYPE.TEXT:
             default:
                 //console.log("Content is"+props.message)
                 return <MessageText ai={ai} content={content} createdAt={createdAt}/>;

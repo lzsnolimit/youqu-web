@@ -6,34 +6,17 @@ import remarkGfm from 'remark-gfm'
 import moment from "moment";
 
 const MessageText = ({ai, content, createdAt}) => {
-    const isJson = (str) => {
-        try {
-            JSON.parse(str);
-        } catch (e) {
-            //Error
-            //JSON is not okay
-            return false;
-        }
-        return true;
-    }
-    const parseContent = () => {
-        console.log(content.result)
-        try {
-            const jsonObj = JSON.parse(content);
-            console.log("result:" + jsonObj)
-            return jsonObj.result;
-        } catch (e) {
-            console.log(e)
-            //console.log("result:"+content)
-            return content;
-        }
+
+
+    const getMessageContnt = () => {
+        return String(content.hasOwnProperty("result") ? content.result : content)
     }
 
     return (
-        <div className="message__wrapper">
+        <div className={`message__wrapper ${ai ? 'message__wrapper__left' : 'message__wrapper__right'}`}>
             <ReactMarkdown
-                className={`message__markdown ${ai ? 'text-left' : 'text-right'}`}
-                children={content.hasOwnProperty("result") ? content.result : content}
+                className={`message__markdown ${ai || getMessageContnt(content).length > 30 ? 'text-left' : 'text-right'}`}
+                children={getMessageContnt(content)}
                 remarkPlugins={[[remarkGfm, {singleTilde: false}]]}
                 components={{
                     code({node, inline, className, children, ...props}) {

@@ -2,9 +2,10 @@ import React, {useContext, useEffect, useRef, useState} from 'react'
 import ChatMessage from './ChatMessage'
 import {ChatContext} from '../context/chatContext'
 import Thinking from './Thinking'
-import {Button} from '@material-ui/core';
 import {createStore, set} from 'idb-keyval';
-
+import {useCookies} from "react-cookie";
+import {Button, Input} from 'antd';
+import {API_PATH, COMMANDS, MESSAGE_TYPE} from '../common/constant'
 
 /**
  * A chat view component that displays a list of messages and a form for sending new messages.
@@ -12,13 +13,14 @@ import {createStore, set} from 'idb-keyval';
 const ChatView = () => {
     const messagesEndRef = useRef()
     const inputRef = useRef()
-    const [formValue, setFormValue] = useState('')
     const [thinking, setThinking] = useState(false)
-    const requestOptions = ['text', 'picture', 'voice']
-    const responseOptions = ['text', 'picture', 'voice']
-    const [requestSelected, setRequestSelected] = useState(requestOptions[0])
-    const [responseSelected, setResponseSelected] = useState(responseOptions[0])
+    const [message, setMessage] = useState("")
+    const [requestSelected, setRequestSelected] = useState(API_PATH.TEXT)
+    const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
     const [messages, addMessage] = useContext(ChatContext)
+    const [cookies, setCookie, removeCookie] = useCookies(['id', 'Authorization']);
+    const fileInputRef = useRef(null);
+
 
     /**
      * Scrolls the chat area to the bottom.
@@ -40,9 +42,10 @@ const ChatView = () => {
         const newMsg = {
             createdAt: Date.now(),
             ai: ai,
-            content: message,
+            content: (message.hasOwnProperty("error")) ? message.error : message,
             type: `${type}`,
         };
+
         addMessage(newMsg);
         //console.log(messages)
         set(Date.now(), newMsg, store)
@@ -62,11 +65,44 @@ const ChatView = () => {
      *
      * @param {Event} e - The submit event of the form.
      */
-    const sendMessage = async (e) => {
-        e.preventDefault()
 
-        const messageContent = formValue
-        const requestType = requestSelected
+
+
+
+    const send = () => {
+        switch (message.trim()) {
+            case COMMANDS.YU_XUE_Xi_PDF:
+                updateMessage(message, false, MESSAGE_TYPE.TEXT)
+                console.log("Waiting for file selection...");
+                fileInputRef.current.click();
+
+                break;
+            case COMMANDS.QING_CHU_JI_YI:
+                updateMessage(message, false, MESSAGE_TYPE.TEXT)
+                sendMessage(message)
+
+                break;
+            default :
+                updateMessage(message, false, requestSelected)
+                sendMessage(message)
+
+                break;
+        }
+        console.log("Done")
+        setMessage('')
+
+    };
+
+
+    const processFile = (event) => {
+        if (event.target.files.length > 0) {
+            updateMessage(event.target.files[0].name, false, MESSAGE_TYPE.TEXT);
+            sendCommand(COMMANDS.YU_XUE_Xi_PDF, API_PATH.YU_XUE_Xi_PDF, event.target.files[0]);
+            event.target.value = '';
+        }
+    }
+
+    const sendMessage = async (messageContent) => {
 
         const BASE_URL = process.env.REACT_APP_BASE_URL
 
@@ -75,45 +111,72 @@ const ChatView = () => {
         console.log("Post URL:" + POST_URL)
 
         setThinking(true)
-        setFormValue('')
-        updateMessage(messageContent, false, requestType)
+
+        try {
+            const response = await fetch(POST_URL, {
+                method: 'POST',
+                timeout: 600000,
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    "dataType": "json",
+                },
+                body: JSON.stringify({
+                    msg: messageContent,
+                    "id": cookies.id,
+                    "response_type": responseSelected,
+                    "request_type": requestSelected
+                }),
+                credentials: 'include'
+            })
+            processReplyMessage(response, responseSelected).then(r => setThinking(false))
+        } catch (error) {
+            // 在这里处理CORS及其他异常
+            console.error("There was a problem with the fetch operation:", error);
+            setThinking(false)
+        }
 
 
+    }
+
+
+    const sendCommand = async (messageContent, api_path, file = null) => {
+
+        const POST_URL = process.env.REACT_APP_BASE_URL + api_path
+
+        setThinking(true)
+        const formData = new FormData();
+        formData.append("msg", messageContent);
+        if (file) {
+            formData.append("files", file);
+        }
+        formData.append("id", cookies.id);
         const response = await fetch(POST_URL, {
             method: 'POST',
             timeout: 600000,
             headers: {
-                'Content-Type': 'application/json; charset=utf-8',
                 "dataType": "json",
             },
-            body: JSON.stringify({
-                msg: messageContent,
-                "id": "23de6e55-77b5-4d3d-b7de-ee4f7644f24a",
-                "response_type": responseSelected,
-                "request_type": requestType
-            }),
+            body: formData, // 使用 formData 作为 body
             credentials: 'include'
         })
 
+        await processReplyMessage(response, MESSAGE_TYPE.TEXT)
+    }
 
-        const data = await response.json()
+    const processReplyMessage = async (response, messageType) => {
 
-        console.log(response.status)
-        if (response.ok) {
-            updateMessage(data, true, responseSelected)
-            // The request was successful
-        } else if (response.status === 429) {
-            setThinking(false)
-        } else {
-            // The request failed
-            window.alert(`openAI is returning an error: ${response.status + response.statusText} 
-      please try again later`)
+        if (response.status!=200){
+            updateMessage("Error with response code:"+response.status, true, messageType);
             console.log(`Request failed with status code ${response.status}`)
-            setThinking(false)
+        }else {
+            const data = await response.json()
+            updateMessage(data, true, messageType)
         }
+
 
         setThinking(false)
     }
+
 
     /**
      * Scrolls the chat area to the bottom when the messages array is updated.
@@ -129,12 +192,6 @@ const ChatView = () => {
         inputRef.current.focus()
     }, [])
 
-    const initRows = 2;
-    const maxTextAreaHeight = 130;
-    const adjustHeight = (e) => {
-        e.target.style.height = 'auto';
-        e.target.style.height = Math.min(e.target.scrollHeight, maxTextAreaHeight) + 'px';
-    };
 
     return (
         <div className="chatview">
@@ -148,31 +205,16 @@ const ChatView = () => {
 
                 <span ref={messagesEndRef}></span>
             </main>
-            <form className='form' onSubmit={sendMessage}>
-                {/*<select value={requestSelected} defaultValue={requestOptions[0]} title="Select request type"*/}
-                {/*        onChange={(e) => setRequestSelected(e.target.value)} className="dropdown">*/}
-                {/*    <option value={requestOptions[0]}>{requestOptions[0]}</option>*/}
-                {/*    <option value={requestOptions[1]}>{requestOptions[1]}</option>*/}
-                {/*    <option value={requestOptions[2]}>{requestOptions[2]}</option>*/}
+            <form className='form'>
+                <input type="file" id="btn_file" ref={fileInputRef} accept=".pdf" onChange={processFile}
+                       style={{display: 'none'}}/>
 
-                {/*</select>*/}
-                <select value={responseSelected} defaultValue={responseOptions[0]} title="Select response type"
-                        onChange={(e) => setResponseSelected(e.target.value)} className="dropdown">
-                    <option value={responseOptions[0]}>{responseOptions[0]}</option>
-                    <option value={responseOptions[1]}>{responseOptions[1]}</option>
-                    <option value={responseOptions[2]}>{responseOptions[2]}</option>
-
-                </select>
-                <textarea ref={inputRef} rows={initRows} className='chatview__textarea-message' value={formValue}
-                          onChange={(e) => {
-                              setFormValue(e.target.value);
-                              adjustHeight(e);
-                          }} onKeyDown={(e) => {
-                    if (e.shiftKey && e.keyCode === 13) {
-                        e.preventDefault()
-                    }
-                }}/>
-                <Button type="submit" className='chatview__btn-send' disabled={!formValue}>Send</Button>
+                <Input.TextArea ref={inputRef} value={message} onChange={event => {
+                    setMessage(event.target.value)
+                }} showCount={true} autoSize={{minRows: 5, maxRows: 5}}
+                                className='chatview__textarea-message'
+                />
+                <Button type="submit" className='chatview__btn-send' disabled={!message} onClick={send}>Send</Button>
             </form>
         </div>
     )

@@ -75,7 +75,7 @@
     }
 
     .chatview__chatarea {
-        @apply h-[85vh] w-full overflow-y-scroll flex flex-col m-2 shadow-md;
+        @apply h-[85vh] w-full overflow-y-scroll flex flex-col mt-2 shadow-md;
     }
 
     .form {
@@ -95,8 +95,7 @@
     }
 
     .chatview__textarea-message {
-        @apply text-xl bg-transparent h-16 sm:w-screen max-h-[20rem] min-h-[4rem] p-2 dark:bg-light-grey
-        border border-light-grey dark:border-dark-grey overflow-y-auto mx-2
+        @apply text-xl bg-transparent h-16 sm:w-screen p-2 dark:bg-light-grey
         focus:ring-offset-indigo-200 focus:ring-2 focus:ring-offset-2
         resize-y rounded-xl;
     }
@@ -120,6 +119,13 @@
 
     .message__wrapper {
         @apply flex-1 w-screen flex-wrap overflow-hidden;
+    }
+
+    .message__wrapper__left {
+        @apply mr-20;
+    }
+    .message__wrapper__right {
+        @apply ml-20;
     }
 
     .message__markdown {
@@ -157,6 +163,7 @@
     .signin__tos {
         @apply text-white text-center font-bold p-2;
     }
+
 
 }
 
