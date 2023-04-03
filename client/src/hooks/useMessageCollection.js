@@ -10,7 +10,7 @@ import {MESSAGE_TYPE} from '../common/constant'
 const useMessageCollection = () => {
     const initialMsg = {
         createdAt: Date.now(),
-        content: '你好，我是话痨机器人，有什么问题你可以直接问我。另外你还可以发送"#菜单"查看我支持对指令。',
+        content: '你好，我是话痨机器人，有什么问题你可以直接问我。另外你还可以发送"#菜单"查看我支持的指令。',
         ai: true,
         type:MESSAGE_TYPE.INTRODUCTION
     }
