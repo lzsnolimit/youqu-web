@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Button, Input} from 'antd';
+import {Button, Input, Row, Col} from 'antd';
 import {API_PATH, COMMANDS, MESSAGE_TYPE} from "../common/constant";
 import {useCookies} from "react-cookie";
 
@@ -165,14 +165,19 @@ const ChatForm = ({addMessage,setThinking,saveMessage}) => {
 
     return (
         <form className='form'>
-            <input type="file" id="btn_file" ref={fileInputRef} accept=".pdf" onChange={processFile}
-                   style={{display: 'none'}}/>
+            <Row className='chat-footer'>
+                <input type="file" id="btn_file" ref={fileInputRef} accept=".pdf" onChange={processFile}
+                    style={{display: 'none'}}/>
 
-            <Input.TextArea ref={inputRef} value={message} onChange={event => {
-                setMessage(event.target.value)
-            }} showCount={true} autoSize={{minRows: 5, maxRows: 5}} className='chatview__textarea-message'/>
-
-            <Button type="submit" className='chatview__btn-send' disabled={!message} onClick={send}>Send</Button>
+                <Col sm={20} xs={24}>
+                    <Input.TextArea ref={inputRef} value={message} onChange={event => {
+                        setMessage(event.target.value)
+                    }} showCount={true} autoSize={{minRows: 5, maxRows: 5}} className='chatview__textarea-message'/>
+                </Col>
+                <Col sm={4} xs={24} style={{padding:'.5rem'}}>
+                    <Button type="submit" className='chatview__btn-send' disabled={!message} onClick={send}>Send</Button>
+                </Col>
+            </Row>
         </form>
     )
 

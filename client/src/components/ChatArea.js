@@ -20,7 +20,7 @@ const ChatArea = ({ messages, thinking }) => {
     }, [messages, thinking])
 
     return (
-    <main className='chatview__chatarea'>
+    <div>
         {messages.map((message, index) => (
             <ChatMessage key={index} message={{...message}} />
         ))}
@@ -28,7 +28,7 @@ const ChatArea = ({ messages, thinking }) => {
         {thinking && <Thinking />}
 
         <span ref={messagesEndRef}></span>
-    </main>)
+    </div>)
 };
 
 export default ChatArea;

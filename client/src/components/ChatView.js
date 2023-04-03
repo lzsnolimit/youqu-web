@@ -29,12 +29,14 @@ const ChatView = () => {
 
     return (
         <div className="chatview">
-            <ChatArea messages={messages} thinking={thinking} addMessage={addMessage}/>
-            <ChatForm
-                addMessage={addMessage}
-                setThinking={setThinking}
-                saveMessage={saveMessage}
-            />
+            <main className='chatview__chatarea'>
+                <ChatArea messages={messages} thinking={thinking} addMessage={addMessage}/>
+                <ChatForm
+                    addMessage={addMessage}
+                    setThinking={setThinking}
+                    saveMessage={saveMessage}
+                />
+            </main>
         </div>
     )
 }
