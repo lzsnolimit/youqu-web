@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, {useContext, useState, useEffect} from 'react'
 import {MdClose, MdMenu} from 'react-icons/md'
 import {ChatContext} from '../context/chatContext'
 import DarkMode from './DarkMode'
@@ -20,6 +20,13 @@ const SideBar = () => {
         clearChat()
         window.sessionStorage.clear()
     }
+    useEffect(() => {
+        const mediaWidth = window.innerWidth
+        if(mediaWidth<576) {
+            setOpen(false)
+        }
+    },[])
+    
 
     return (
         <section className={` ${open ? "w-72" : "w-20 "} sidebar`}>
