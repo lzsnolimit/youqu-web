@@ -20,7 +20,7 @@ const ChatArea = ({ messages, thinking }) => {
     }, [messages, thinking])
 
     return (
-    <div>
+    <div className='message-box'>
         {messages.map((message, index) => (
             <ChatMessage key={index} message={{...message}} />
         ))}
