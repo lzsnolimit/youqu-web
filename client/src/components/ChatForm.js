@@ -169,12 +169,12 @@ const ChatForm = ({addMessage,setThinking,saveMessage}) => {
                 <input type="file" id="btn_file" ref={fileInputRef} accept=".pdf" onChange={processFile}
                     style={{display: 'none'}}/>
 
-                <Col sm={20} xs={24}>
+                <Col sm={20} xs={18}>
                     <Input.TextArea ref={inputRef} value={message} onChange={event => {
                         setMessage(event.target.value)
-                    }} showCount={true} autoSize={{minRows: 5, maxRows: 5}} className='chatview__textarea-message'/>
+                    }} showCount={true} autoSize={{minRows: 3, maxRows: 5}} className='chatview__textarea-message'/>
                 </Col>
-                <Col sm={4} xs={24} style={{padding:'.5rem'}}>
+                <Col sm={4} xs={6} style={{padding:'.5rem'}}>
                     <Button type="submit" className='chatview__btn-send' disabled={!message} onClick={send}>Send</Button>
                 </Col>
             </Row>

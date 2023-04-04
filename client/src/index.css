@@ -75,11 +75,13 @@
     }
 
     .chatview__chatarea {
-        @apply h-[100vh] w-full overflow-y-scroll flex flex-col justify-between mt-2 shadow-md p-2;
+        @apply h-[100vh] w-full flex flex-col justify-between mt-2 shadow-md p-2;
     }
-
+    .message-box {
+        @apply overflow-y-scroll;
+    }
     .form {
-        @apply flex justify-between flex-col items-stretch sm:flex-row m-2 
+        @apply flex justify-between flex-col items-stretch sm:flex-row m-2
         text-black dark:text-white duration-500;
     }
 
@@ -190,9 +192,21 @@
         @apply ml-2;
     }
     .message {
-        @apply p-2;
+        @apply p-0 pt-2;
     }
     .sidebar__btn-close {
         display: none;
+    }
+    .message__pic {
+        @apply mr-0;
+    }
+    .chatview__textarea-message {
+        @apply p-0;
+    }
+    .chatview__btn-send {
+        @apply p-2;
+    }
+    .sidebar{
+        @apply w-4;
     }
 }
