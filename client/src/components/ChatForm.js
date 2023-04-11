@@ -3,7 +3,7 @@ import {Button, Input, Row, Col} from 'antd';
 import {API_PATH, COMMANDS, MESSAGE_TYPE} from "../common/constant";
 import {useCookies} from "react-cookie";
 import io from "socket.io-client";
-import {set} from "idb-keyval/dist/index";
+import {set} from "idb-keyval";
 import store from "../common/storage";
 import {ulid} from "ulid";
 import sleep from "sleep-promise";
@@ -193,6 +193,7 @@ const ChatForm = ({addMessage,setThinking,messages}) => {
         // Call addMessage function to update UI
         console.log("createStreamMessage:" + JSON.stringify(message))
         await addMessage(message);
+        saveMessage(message)
         console.log("message:" + JSON.stringify(messages.get(message.messageID)))
         return message;
     };

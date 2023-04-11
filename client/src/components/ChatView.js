@@ -16,7 +16,7 @@ const ChatView = () => {
         //console.log("Message:"+JSON.stringify(message))
         const updatedMessages = new Map(messages);
         updatedMessages.set(message.messageID, message);
-        setMessages(updatedMessages);
+        setMessages(pre => new Map([...pre, ...updatedMessages]));
     };
 
 
