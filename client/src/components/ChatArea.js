@@ -16,13 +16,16 @@ const ChatArea = ({ messages, thinking }) => {
      * Scrolls the chat area to the bottom when the messages array is updated.
      */
     useEffect(() => {
+        //console.log("Messages size:"+messages.size)
         scrollToBottom()
-    }, [messages, thinking])
+    }, [messages])
+
 
     return (
+
     <div className='message-box'>
-        {messages.map((message, index) => (
-            <ChatMessage key={index} message={{...message}} />
+        {Array.from(messages.values()).map((message) => (
+            <ChatMessage key={message.messageID} message={{...message}} />
         ))}
 
         {thinking && <Thinking />}

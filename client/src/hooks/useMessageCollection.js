@@ -1,59 +1,50 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useState, useMemo} from 'react'
 import {createStore, get, keys} from 'idb-keyval';
 import {MESSAGE_TYPE} from '../common/constant'
+import store from '../common/storage'
+import { ulid } from 'ulid'
 
-/**
- * A custom hook for managing the conversation between the user and the AI.
- *
- * @returns {Object} An object containing the `messages` array and the `addMessage` function.
- */
+
 const useMessageCollection = () => {
     const initialMsg = {
         createdAt: Date.now(),
+        messageID:ulid(),
         content: '你好，我是话痨机器人，有什么问题你可以直接问我。另外你还可以发送"#菜单"查看我支持的指令。',
         ai: true,
-        type:MESSAGE_TYPE.INTRODUCTION
-    }
-    const storedMessages = JSON.parse(localStorage.getItem('messages') || '[]')
-    const store = new createStore("youqu.app", "messages");
+        type: MESSAGE_TYPE.INTRODUCTION,
+    };
+
+    const initialMap = useMemo(
+        () => new Map([[initialMsg.messageID, initialMsg]]),
+        [initialMsg]
+    );
+
+    const [messages, setMessages] = useState(initialMap);
+
     useEffect(() => {
         const loadMessages = async () => {
-            let storedMessages = []
             try {
                 const messageKeys = await keys(store);
-                storedMessages = await Promise.all(messageKeys.map((key) => get(key, store)));
-                //console.log(storedMessages)
+                const fetchedMessages = await Promise.all(
+                    messageKeys.map(async (messageID) => {
+                        const value = await get(messageID, store);
+                        return [messageID, value];
+                    })
+                );
+                const newMessages = new Map([ ...fetchedMessages,...initialMap]);
+                setMessages(newMessages);
             } catch (error) {
                 console.error('Error fetching all messages:', error);
-                return [];
+                setMessages(initialMap);
             }
-
-
-            if (storedMessages === undefined) {
-                setMessages([initialMsg])
-            } else {
-                storedMessages.push(initialMsg)
-                setMessages(storedMessages);
-            }
-        }
+        };
         loadMessages();
-    }, [])
-
-    const [messages, setMessages] = useState(storedMessages);
+    }, []);
 
 
-    /**
-     * A function for adding a new message to the collection.
-     *
-     * @param {Object} message - The message to add to the collection.
-     */
-    const addMessage = (message) => {
-        setMessages((prev) => [...prev, message]);
-    }
+    const clearMessages = () => setMessages(new Map(initialMap));
 
-    const clearMessages = () => setMessages([initialMsg])
+    return [messages, setMessages, clearMessages];
+};
 
-    return [messages, addMessage, clearMessages];
-}
-
-export default useMessageCollection
+export default useMessageCollection;

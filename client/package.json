@@ -31,7 +31,10 @@
     "react-scripts": "5.0.1",
     "react-syntax-highlighter": "^15.5.0",
     "remark-gfm": "^3.0.1",
+    "sleep-promise": "^9.1.0",
+    "socket.io-client": "^4.6.1",
     "start": "^5.1.0",
+    "ulid": "^2.3.0",
     "use-local-storage": "^2.3.6"
   },
   "scripts": {

@@ -2,17 +2,24 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Button, Input, Row, Col} from 'antd';
 import {API_PATH, COMMANDS, MESSAGE_TYPE} from "../common/constant";
 import {useCookies} from "react-cookie";
+import io from "socket.io-client";
+import {set} from "idb-keyval/dist/index";
+import store from "../common/storage";
+import {ulid} from "ulid";
+import sleep from "sleep-promise";
 
 
-const ChatForm = ({addMessage,setThinking,saveMessage}) => {
+
+const ChatForm = ({addMessage,setThinking,messages}) => {
 
     const [cookies] = useCookies(['id', 'Authorization']);
     const [requestSelected, setRequestSelected] = useState(API_PATH.TEXT)
     const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
-    const [message, setMessage] = useState("")
+    const [inputMessage, setInputMessage] = useState("")
     const fileInputRef = useRef(null);
     const inputRef = useRef()
 
+    //const [socket, setSocket] = useState(null);
 
     /**
      * Focuses the TextArea input to when the component is first rendered.
@@ -21,13 +28,59 @@ const ChatForm = ({addMessage,setThinking,saveMessage}) => {
         inputRef.current.focus()
     }, [])
 
-    const sendCommand = async (messageContent, api_path, file = null) => {
+
+
+    const sendStreamMessage = (message) => {
+        //console.log("sendStreamMessage:", JSON.stringify(message));
+        const socket = io.connect(process.env.REACT_APP_WS_URL);
+        socket.on('reply', function (data) {
+            console.log('reply' + JSON.stringify(data))
+            appendStreamMessage(data)
+        });
+        socket.on('final', function (data) {
+            console.log('final' + JSON.stringify(data))
+            appendStreamMessage(data)
+        });
+        socket.on('disconnect', function (data) {
+            //console.log(data)
+        });
+        const requestBody = {
+            msg: message.content,
+            uid: cookies.id,
+            messageID: ulid(),
+            response_type: responseSelected,
+            request_type: requestSelected,
+        }
+        console.log("wqd:"+requestBody.messageID+" "+message.messageID)
+        createStreamMessage(requestBody.messageID);
+        //socket.emit("message", requestBody);
+    }
+
+
+
+    const saveMessage=(newMsg)=>{
+
+        set(newMsg.messageID, newMsg, store)
+            .then(() => {
+                //console.log("Message saved to indexedDB");
+            })
+            .catch((error) => {
+                console.error("Error updating inputMessage in indexedDB:", error);
+            });
+    }
+
+
+
+
+    const sendCommand = async (commandContent, api_path, file = null) => {
 
         const POST_URL = process.env.REACT_APP_BASE_URL + api_path
-
         setThinking(true)
         const formData = new FormData();
-        formData.append("msg", messageContent);
+        const messageID=ulid();
+        await sleep(1);
+        formData.append("msg", commandContent);
+        formData.append("messageID",messageID)
         if (file) {
             formData.append("files", file);
         }
@@ -42,59 +95,15 @@ const ChatForm = ({addMessage,setThinking,saveMessage}) => {
             credentials: 'include'
         })
 
-        await processReplyMessage(response, MESSAGE_TYPE.TEXT)
-    }
-
-
-
-
-    const sendMessage = async (messageContent) => {
-
-        const BASE_URL = process.env.REACT_APP_BASE_URL
-
-        const POST_URL = BASE_URL + responseSelected
-
-        console.log("Post URL:" + POST_URL)
-
-        setThinking(true)
-
-        try {
-            const response = await fetch(POST_URL, {
-                method: 'POST',
-                timeout: 600000,
-                headers: {
-                    'Content-Type': 'application/json; charset=utf-8',
-                    "dataType": "json",
-                },
-                body: JSON.stringify({
-                    msg: messageContent,
-                    "id": cookies.id,
-                    "response_type": responseSelected,
-                    "request_type": requestSelected
-                }),
-                credentials: 'include'
-            })
-            processReplyMessage(response, responseSelected).then(r => setThinking(false))
-        } catch (error) {
-            // 在这里处理CORS及其他异常
-            console.error("There was a problem with the fetch operation:", error);
-            setThinking(false)
-        }
-
-    }
-
-
-    const processReplyMessage = async (response, messageType) => {
+        //await processReplyMessage(response, MESSAGE_TYPE.TEXT)
 
         if (response.status!=200){
-            updateMessage("Error with response code:"+response.status, true, messageType);
-            console.log(`Request failed with status code ${response.status}`)
+            createReplyMessage("Error with response code:"+response.status);
+            //console.log(`Request failed with status code ${response.status}`)
         }else {
             const data = await response.json()
-            updateMessage(data, true, messageType)
+            createReplyMessage(data)
         }
-
-
         setThinking(false)
     }
 
@@ -102,7 +111,7 @@ const ChatForm = ({addMessage,setThinking,saveMessage}) => {
 
     const processFile = (event) => {
         if (event.target.files.length > 0) {
-            updateMessage(event.target.files[0].name, false, MESSAGE_TYPE.TEXT);
+            createSendMessage(event.target.files[0].name);
             sendCommand(COMMANDS.YU_XUE_Xi_PDF, API_PATH.YU_XUE_Xi_PDF, event.target.files[0]);
             event.target.value = '';
         }
@@ -116,52 +125,96 @@ const ChatForm = ({addMessage,setThinking,saveMessage}) => {
 
 
 
-    const send = () => {
-        switch (message.trim()) {
-            case COMMANDS.YU_XUE_Xi_PDF:
-                updateMessage(message, false, MESSAGE_TYPE.TEXT)
-                console.log("Waiting for file selection...");
-                fileInputRef.current.click();
+    const send = async () => {
+        switch (inputMessage.trim()) {
 
+            case COMMANDS.YU_XUE_Xi_PDF:
+                createSendMessage(inputMessage)
+                //console.log("Waiting for file selection...");
+                fileInputRef.current.click();
                 break;
             case COMMANDS.QING_CHU_JI_YI:
-                updateMessage(message, false, MESSAGE_TYPE.TEXT)
-                sendMessage(message)
+                sendStreamMessage(createSendMessage(inputMessage))
                 break;
             default :
-                updateMessage(message, false, requestSelected)
-                sendMessage(message)
-
+                //sendStreamMessage(createSendMessage(inputMessage))
+                const sendMessage = await createSendMessage(inputMessage)
+                sendStreamMessage(sendMessage)
                 break;
         }
-        console.log("Done")
-        setMessage('')
+        //console.log("Done")
+        setInputMessage('')
     };
 
 
-    /**
-     * Adds a new message to the chat.
-     *
-     * @param messageContent - The text of the new message. json or text
-     * @param {boolean} [ai=false] - Whether the message was sent by an AI or the user.
-     * @param {string} [type="text"] - Message type
-     */
+    const createReplyMessage = (messageContent,type=MESSAGE_TYPE.TEXT) => {
 
-    const updateMessage = (messageContent, ai = false, type = "text") => {
-        const newMsg = {
+        const message = {
             createdAt: Date.now(),
-            ai: ai,
-            content: (messageContent.hasOwnProperty("error")) ? messageContent.error : messageContent,
+            messageID:messageContent.messageID,
+            ai: true,
             type: `${type}`,
+            content:messageContent.content,
         };
         // Call addMessage function to update UI
-        addMessage(newMsg);
-        //console.log(messages)
-        saveMessage(newMsg);
-
-
-
+        console.log("Add message:"+JSON.stringify(message))
+        addMessage(message);
+        saveMessage(message);
+        return message;
     };
+
+
+
+
+    const appendStreamMessage = async (messageContent) => {
+        const message = {
+            createdAt: Date.now(),
+            ai: true,
+            type: MESSAGE_TYPE.TEXT,
+            messageID: messageContent.messageID,
+            content: messageContent.content,
+        };
+        // Call addMessage function to update UI
+        console.log("createStreamMessage:" + JSON.stringify(message))
+        await addMessage(message);
+        console.log("message:" + JSON.stringify(messages.get(message.messageID)))
+        return message;
+    };
+
+    const createStreamMessage = async (messageID) => {
+        console.log("messageID:" + messageID)
+        const message = {
+            createdAt: Date.now(),
+            ai: true,
+            type: MESSAGE_TYPE.TEXT,
+            messageID: messageID,
+            content: "",
+        };
+        // Call addMessage function to update UI
+        console.log("createStreamMessage:" + JSON.stringify(message))
+        await addMessage(message);
+        console.log("message:" + JSON.stringify(messages.get(message.messageID)))
+        return message;
+    };
+
+
+
+
+    const createSendMessage = async (messageContent) => {
+        const message = {
+            createdAt: Date.now(),
+            messageID: ulid(),
+            ai: false,
+            type: MESSAGE_TYPE.TEXT,
+            content: messageContent,
+        };
+        await addMessage(message);
+        saveMessage(message);
+        //console.log("Message:"+JSON.stringify(message))
+        return message;
+    };
+
+
 
     return (
         <form className='form'>
@@ -170,12 +223,12 @@ const ChatForm = ({addMessage,setThinking,saveMessage}) => {
                     style={{display: 'none'}}/>
 
                 <Col sm={20} xs={18}>
-                    <Input.TextArea ref={inputRef} value={message} onChange={event => {
-                        setMessage(event.target.value)
+                    <Input.TextArea ref={inputRef} value={inputMessage} onChange={event => {
+                        setInputMessage(event.target.value)
                     }} showCount={true} autoSize={{minRows: 3, maxRows: 5}} className='chatview__textarea-message'/>
                 </Col>
                 <Col sm={4} xs={6} style={{padding:'.5rem'}}>
-                    <Button type="submit" className='chatview__btn-send' disabled={!message} onClick={send}>Send</Button>
+                    <Button type="submit" className='chatview__btn-send' disabled={!inputMessage} onClick={send}>Send</Button>
                 </Col>
             </Row>
         </form>

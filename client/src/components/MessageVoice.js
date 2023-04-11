@@ -16,7 +16,7 @@ const MessageVoice = ({ai, audioContent, createdAt}) => {
 
 
     const audioSrcContent = `data:audio/wav;base64,${audioBase64}`;
-    //console.log(audioSrcContent)
+    ////console.log(audioSrcContent)
     // Render an audio element with controls and the data URL as the source
     return (
         <div className={`message__wrapper ${ai ? 'message__wrapper__left' : 'message__wrapper__right'}`}>

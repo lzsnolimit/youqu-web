@@ -19,6 +19,7 @@ const ChatContextProvider = (props) => {
 
     return (
         <ChatContext.Provider value={[messages, setMessages, clearMessages]}>
+           {/*{console.log("Start ChatContextProvider messages size:"+messages.size)}*/}
             {props.children}
         </ChatContext.Provider>
     )
