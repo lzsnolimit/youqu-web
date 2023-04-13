@@ -1,16 +1,13 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Button, Input, Row, Col} from 'antd';
+import {Button, Col, Input, Row} from 'antd';
 import {API_PATH, COMMANDS, MESSAGE_TYPE} from "../common/constant";
 import {useCookies} from "react-cookie";
 import io from "socket.io-client";
-import {set} from "idb-keyval";
-import store from "../common/storage";
 import {ulid} from "ulid";
 import sleep from "sleep-promise";
 
 
-
-const ChatForm = ({addMessage,setThinking,messages}) => {
+const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
 
     const [cookies] = useCookies(['id', 'Authorization']);
     const [requestSelected, setRequestSelected] = useState(API_PATH.TEXT)
@@ -29,17 +26,16 @@ const ChatForm = ({addMessage,setThinking,messages}) => {
     }, [])
 
 
-
     const sendStreamMessage = (message) => {
         //console.log("sendStreamMessage:", JSON.stringify(message));
-        const socket = io.connect(process.env.REACT_APP_WS_URL);
+        const socket = io.connect(process.env.REACT_APP_WS_URL,{withCredentials: false,});
         socket.on('reply', function (data) {
-            console.log('reply' + JSON.stringify(data))
+            //console.log('reply' + JSON.stringify(data))
             appendStreamMessage(data)
         });
         socket.on('final', function (data) {
             console.log('final' + JSON.stringify(data))
-            appendStreamMessage(data)
+            saveMessage(appendStreamMessage(data))
         });
         socket.on('disconnect', function (data) {
             //console.log(data)
@@ -51,23 +47,11 @@ const ChatForm = ({addMessage,setThinking,messages}) => {
             response_type: responseSelected,
             request_type: requestSelected,
         }
-        console.log("wqd:"+requestBody.messageID+" "+message.messageID)
+        //console.log("requestBody："+JSON.stringify(requestBody))
         createStreamMessage(requestBody.messageID);
-        //socket.emit("message", requestBody);
+        socket.emit("message", requestBody);
     }
 
-
-
-    const saveMessage=(newMsg)=>{
-
-        set(newMsg.messageID, newMsg, store)
-            .then(() => {
-                //console.log("Message saved to indexedDB");
-            })
-            .catch((error) => {
-                console.error("Error updating inputMessage in indexedDB:", error);
-            });
-    }
 
 
 
@@ -125,9 +109,8 @@ const ChatForm = ({addMessage,setThinking,messages}) => {
 
 
 
-    const send = async () => {
+    const send = () => {
         switch (inputMessage.trim()) {
-
             case COMMANDS.YU_XUE_Xi_PDF:
                 createSendMessage(inputMessage)
                 //console.log("Waiting for file selection...");
@@ -137,9 +120,7 @@ const ChatForm = ({addMessage,setThinking,messages}) => {
                 sendStreamMessage(createSendMessage(inputMessage))
                 break;
             default :
-                //sendStreamMessage(createSendMessage(inputMessage))
-                const sendMessage = await createSendMessage(inputMessage)
-                sendStreamMessage(sendMessage)
+                sendStreamMessage(createSendMessage(inputMessage))
                 break;
         }
         //console.log("Done")
@@ -166,7 +147,7 @@ const ChatForm = ({addMessage,setThinking,messages}) => {
 
 
 
-    const appendStreamMessage = async (messageContent) => {
+    const appendStreamMessage = (messageContent) => {
         const message = {
             createdAt: Date.now(),
             ai: true,
@@ -175,33 +156,29 @@ const ChatForm = ({addMessage,setThinking,messages}) => {
             content: messageContent.content,
         };
         // Call addMessage function to update UI
-        console.log("createStreamMessage:" + JSON.stringify(message))
-        await addMessage(message);
-        console.log("message:" + JSON.stringify(messages.get(message.messageID)))
+        //console.log("createStreamMessage:" + JSON.stringify(message))
+        addMessage(message);
         return message;
     };
 
-    const createStreamMessage = async (messageID) => {
-        console.log("messageID:" + messageID)
+    const createStreamMessage = (messageID) => {
+        //console.log("messageID:" + messageID)
         const message = {
             createdAt: Date.now(),
             ai: true,
             type: MESSAGE_TYPE.TEXT,
             messageID: messageID,
-            content: "",
+            content: "Thinking...",
         };
         // Call addMessage function to update UI
-        console.log("createStreamMessage:" + JSON.stringify(message))
-        await addMessage(message);
+        //console.log("createStreamMessage:" + JSON.stringify(message))
+        addMessage(message);
         saveMessage(message)
-        console.log("message:" + JSON.stringify(messages.get(message.messageID)))
         return message;
     };
 
 
-
-
-    const createSendMessage = async (messageContent) => {
+    const createSendMessage = (messageContent) => {
         const message = {
             createdAt: Date.now(),
             messageID: ulid(),
@@ -209,9 +186,8 @@ const ChatForm = ({addMessage,setThinking,messages}) => {
             type: MESSAGE_TYPE.TEXT,
             content: messageContent,
         };
-        await addMessage(message);
+        addMessage(message);
         saveMessage(message);
-        //console.log("Message:"+JSON.stringify(message))
         return message;
     };
 

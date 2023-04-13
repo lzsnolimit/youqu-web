@@ -4,7 +4,6 @@ import MessageText from "./MessageText";
 import MessageVoice from "./MessageVoice";
 import MessagePicture from "./MessagePicture";
 import {MESSAGE_TYPE} from '../common/constant';
-import {message} from "antd";
 
 
 /**

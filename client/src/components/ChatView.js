@@ -1,10 +1,10 @@
-import React, {useContext, useEffect, useState} from 'react'
-import {ChatContext} from '../context/chatContext'
-import {createStore, set} from 'idb-keyval';
+import React, {useState} from 'react'
+import {set} from 'idb-keyval';
 import ChatArea from "./ChatArea";
 import ChatForm from "./ChatForm";
 import store from '../common/storage'
 import useMessageCollection from "../hooks/useMessageCollection";
+
 /**
  * A chat view component that displays a list of messages and a form for sending new messages.
  */
@@ -17,7 +17,17 @@ const ChatView = () => {
         const updatedMessages = new Map(messages);
         updatedMessages.set(message.messageID, message);
         setMessages(pre => new Map([...pre, ...updatedMessages]));
-    };
+    }
+
+    const saveMessage=(newMsg)=>{
+        set(newMsg.messageID, newMsg, store)
+            .then(() => {
+                //console.log("Message saved to indexedDB");
+            })
+            .catch((error) => {
+                console.error("Error updating inputMessage in indexedDB:", error);
+            });
+    }
 
 
     return (
@@ -27,6 +37,7 @@ const ChatView = () => {
                 <ChatForm
                     addMessage={addMessage}
                     messages={messages}
+                    saveMessage={saveMessage}
                     setThinking={setThinking}
                 />
             </main>

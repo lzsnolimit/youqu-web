@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {MdClose, MdMenu} from 'react-icons/md'
 import {ChatContext} from '../context/chatContext'
 import DarkMode from './DarkMode'
