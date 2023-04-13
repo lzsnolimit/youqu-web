@@ -38,7 +38,7 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
             saveMessage(appendStreamMessage(data))
         });
         socket.on('disconnect', function (data) {
-            //console.log(data)
+            console.log('disconnect')
         });
         const requestBody = {
             msg: message.content,
