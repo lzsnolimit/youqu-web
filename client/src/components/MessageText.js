@@ -8,15 +8,13 @@ import moment from "moment";
 const MessageText = ({ai, content, createdAt}) => {
 
 
-    const getMessageContnt = () => {
-        return String(content.hasOwnProperty("result") ? content.result : content)
-    }
 
     return (
         <div className={`message__wrapper ${ai ? 'message__wrapper__left' : 'message__wrapper__right'}`}>
+
             <ReactMarkdown
-                className={`message__markdown ${ai || getMessageContnt(content).length > 30 ? 'text-left' : 'text-right'}`}
-                children={getMessageContnt(content)}
+                className={`message__markdown ${ai || content.length > 30 ? 'text-left' : 'text-right'}`}
+                children={content}
                 remarkPlugins={[[remarkGfm, {singleTilde: false}]]}
                 components={{
                     code({node, inline, className, children, ...props}) {

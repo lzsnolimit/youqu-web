@@ -27,6 +27,7 @@ const App = () => {
 
     return (
         <ChatContextProvider>
+           {console.log("Start app")}
             <div>
                 <Home/>
             </div>
