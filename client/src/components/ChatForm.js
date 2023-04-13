@@ -4,7 +4,6 @@ import {API_PATH, COMMANDS, MESSAGE_TYPE} from "../common/constant";
 import {useCookies} from "react-cookie";
 import io from "socket.io-client";
 import {ulid} from "ulid";
-import sleep from "sleep-promise";
 
 
 const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
@@ -62,7 +61,6 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
         setThinking(true)
         const formData = new FormData();
         const messageID=ulid();
-        await sleep(1);
         formData.append("msg", commandContent);
         formData.append("messageID",messageID)
         if (file) {
