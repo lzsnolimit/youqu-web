@@ -115,7 +115,7 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
                 fileInputRef.current.click();
                 break;
             case COMMANDS.QING_CHU_JI_YI:
-                sendCommand(inputMessage,API_PATH.TEXT)
+                sendStreamMessage(createSendMessage(inputMessage))
                 break;
             default :
                 sendStreamMessage(createSendMessage(inputMessage))

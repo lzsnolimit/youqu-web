@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import {MdClose, MdMenu} from 'react-icons/md'
 import {ChatContext} from '../context/chatContext'
 import DarkMode from './DarkMode'
+import ClearMemory from "./ClearMemory";
 
 /**
  * A sidebar component that displays a list of nav items and a toggle
@@ -54,6 +55,7 @@ const SideBar = () => {
 
             <div className="nav__bottom">
                 <DarkMode open={open}/>
+                <ClearMemory></ClearMemory>
                 {/*<div className="nav">*/}
                 {/*    <a href='https://github.com/EyuCoder/chatgpt-clone' className="nav__item">*/}
                 {/*        <div className="nav__icons">*/}
