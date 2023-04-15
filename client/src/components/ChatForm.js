@@ -30,7 +30,7 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
         const socket = io.connect(process.env.REACT_APP_WS_URL,{withCredentials: false,});
         socket.on('reply', function (data) {
             //console.log('reply' + JSON.stringify(data))
-            appendStreamMessage(data)
+            saveMessage(appendStreamMessage(data))
         });
         socket.on('final', function (data) {
             console.log('final' + JSON.stringify(data))
@@ -115,7 +115,7 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
                 fileInputRef.current.click();
                 break;
             case COMMANDS.QING_CHU_JI_YI:
-                sendStreamMessage(createSendMessage(inputMessage))
+                sendCommand(inputMessage,API_PATH.TEXT)
                 break;
             default :
                 sendStreamMessage(createSendMessage(inputMessage))
@@ -127,7 +127,6 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
 
 
     const createReplyMessage = (messageContent,type=MESSAGE_TYPE.TEXT) => {
-
         const message = {
             createdAt: Date.now(),
             messageID:messageContent.messageID,
