@@ -170,6 +170,14 @@
         @apply text-white text-center font-bold p-2;
     }
 
+    /* Conversations */
+    .conversations {
+        @apply flex flex-col text-white h-[100%]
+    }
+    .conversations__new_chat {
+
+    }
+
 
 }
 

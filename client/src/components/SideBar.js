@@ -3,6 +3,7 @@ import {MdClose, MdMenu} from 'react-icons/md'
 import {ChatContext} from '../context/chatContext'
 import DarkMode from './DarkMode'
 import ClearMemory from "./ClearMemory";
+import Conversations from "./Conversations";
 
 /**
  * A sidebar component that displays a list of nav items and a toggle
@@ -27,7 +28,7 @@ const SideBar = () => {
             setOpen(false)
         }
     },[])
-    
+
 
     return (
         <section className={` ${open ? "w-72" : "w-20 "} sidebar`}>
@@ -54,6 +55,7 @@ const SideBar = () => {
             {/*</div>*/}
 
             <div className="nav__bottom">
+                <Conversations/>
                 <DarkMode open={open}/>
                 <ClearMemory></ClearMemory>
                 {/*<div className="nav">*/}

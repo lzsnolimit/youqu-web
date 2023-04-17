@@ -6,7 +6,7 @@ import io from "socket.io-client";
 import {ulid} from "ulid";
 
 
-const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
+const ChatForm = ({addMessage,setThinking,messages}) => {
 
     const [cookies] = useCookies(['id', 'Authorization']);
     const [requestSelected, setRequestSelected] = useState(API_PATH.TEXT)
@@ -30,11 +30,11 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
         const socket = io.connect(process.env.REACT_APP_WS_URL,{withCredentials: false,});
         socket.on('reply', function (data) {
             //console.log('reply' + JSON.stringify(data))
-            saveMessage(appendStreamMessage(data))
+            appendStreamMessage(data)
         });
         socket.on('final', function (data) {
             console.log('final' + JSON.stringify(data))
-            saveMessage(appendStreamMessage(data))
+            appendStreamMessage(data)
         });
         socket.on('disconnect', function (data) {
             console.log('disconnect')
@@ -137,7 +137,6 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
         // Call addMessage function to update UI
         console.log("Add message:"+JSON.stringify(message))
         addMessage(message);
-        saveMessage(message);
         return message;
     };
 
@@ -155,7 +154,6 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
         // Call addMessage function to update UI
         //console.log("createStreamMessage:" + JSON.stringify(message))
         addMessage(message);
-        return message;
     };
 
     const createStreamMessage = (messageID) => {
@@ -170,7 +168,6 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
         // Call addMessage function to update UI
         //console.log("createStreamMessage:" + JSON.stringify(message))
         addMessage(message);
-        saveMessage(message)
         return message;
     };
 
@@ -184,7 +181,6 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
             content: messageContent,
         };
         addMessage(message);
-        saveMessage(message);
         return message;
     };
 
