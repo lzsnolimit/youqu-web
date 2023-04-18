@@ -1,32 +1,51 @@
-import React, {useState} from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import ChatArea from "./ChatArea";
 import ChatForm from "./ChatForm";
 import { messagesStore } from '../common/storage'
 import useIndexedDB from "../hooks/useIndexedDB";
 import { ulid } from "ulid";
 import { MESSAGE_TYPE } from "../common/constant";
+import { ChatContext } from "../context/chatContext";
 
+
+const initialMsg = {
+    id: '10001',
+    createdAt: Date.now(),
+    messageID:ulid(),
+    content: '你好，我是话痨机器人，有什么问题你可以直接问我。另外你还可以发送"#菜单"查看我支持的指令。',
+    ai: true,
+    type: MESSAGE_TYPE.INTRODUCTION,
+};
 /**
  * A chat view component that displays a list of messages and a form for sending new messages.
  */
 const ChatView = () => {
+    const {dbData: messagesDbData , saveDataToDB: saveMessagesToDB} = useIndexedDB(messagesStore, initialMsg);
+    const {selectedConversationId} = useContext(ChatContext);
+
+    const [messages, setMessages] = useState([]);
     const [thinking, setThinking] = useState(false)
 
-
-    const initialMsg = {
-        createdAt: Date.now(),
-        messageID:ulid(),
-        content: '你好，我是话痨机器人，有什么问题你可以直接问我。另外你还可以发送"#菜单"查看我支持的指令。',
-        ai: true,
-        type: MESSAGE_TYPE.INTRODUCTION,
-    };
+    useEffect(() => {
+      loadMessages();
+    }, [selectedConversationId, messagesDbData.size])
 
 
-    // todo 1. 向SideBar拿到conversationID并且将其set给message
-    const {dbData , saveDataToDB} = useIndexedDB(messagesStore, initialMsg);
+    const loadMessages = () => {
+        setTimeout(() => {
+            const withCVIdMessages = Array.from(messagesDbData.values())
+              .filter((message) => {
+                  const isAIDefaultMessage = message.id === '10001';
+                  return isAIDefaultMessage || (message.conversationId && message.conversationId === selectedConversationId)
+              })
 
-    const addMessage = (message) => {
-        saveDataToDB(message)
+            setMessages(withCVIdMessages);
+        }, 200)
+    }
+
+
+    const addMessage = async (message) => {
+        await saveMessagesToDB({...message, conversationId: selectedConversationId});
     }
 
 
@@ -34,10 +53,9 @@ const ChatView = () => {
     return (
         <div className="chatview">
             <main className='chatview__chatarea'>
-                <ChatArea messages={dbData} thinking={thinking}/>
+                <ChatArea messages={messages} thinking={thinking}/>
                 <ChatForm
                     addMessage={addMessage}
-                    messages={dbData}
                     setThinking={setThinking}
                 />
             </main>

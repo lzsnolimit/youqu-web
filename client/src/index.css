@@ -172,10 +172,15 @@
 
     /* Conversations */
     .conversations {
-        @apply flex flex-col text-white h-[100%]
+        @apply flex flex-col text-white h-[100%] gap-1
     }
-    .conversations__new_chat {
-
+    .conversations__add_chat {
+        @apply flex p-3 cursor-pointer rounded-lg
+        hover:bg-light-grey
+    }
+    .conversations__chat {
+        @apply flex p-3 cursor-pointer rounded-lg
+        hover:bg-light-grey
     }
 
 

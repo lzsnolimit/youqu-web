@@ -43,7 +43,6 @@ const useIndexedDB = (store, initData) => {
     const _data = data?.id ? data : {...data, id: ulid()};
 
     return set(_data.id, _data, store).then(() => {
-      console.log(_data)
       const map = new Map();
       map.set(_data.id, _data);
       setMapData(pre=> new Map([...pre, ...map]));

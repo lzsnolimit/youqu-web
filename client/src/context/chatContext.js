@@ -13,13 +13,13 @@ const ChatContext = createContext({})
  * @param {Object} props - The properties passed to the component.
  * @returns {JSX.Element} A ChatContext.Provider element.
  */
-const ChatContextProvider = (props) => {
+const ChatContextProvider = ({value, children}) => {
     // const [messages, setMessages, clearMessages] = useMessageCollection([])
 
     return (
-        <ChatContext.Provider value={""}>
+        <ChatContext.Provider value={value}>
            {/*{console.log("Start ChatContextProvider messages size:"+messages.size)}*/}
-            {props.children}
+            {children}
         </ChatContext.Provider>
     )
 }
