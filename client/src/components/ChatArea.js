@@ -24,7 +24,7 @@ const ChatArea = ({ messages, thinking }) => {
     return (
 
     <div className='message-box'>
-        {Array.from(messages.values()).map((message) => (
+        {messages.map((message) => (
             <ChatMessage key={message.messageID} message={{...message}} />
         ))}
 

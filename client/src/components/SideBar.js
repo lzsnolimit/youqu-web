@@ -13,13 +13,13 @@ import Conversations from "./Conversations";
  */
 const SideBar = () => {
     const [open, setOpen] = useState(true)
-    const [, , clearMessages] = useContext(ChatContext)
+    // const [, , clearMessages] = useContext(ChatContext)
     /**
      * Toggles the dark mode.
      */
-    const clearChat = () => clearMessages()
+    // const clearChat = () => clearMessages()
     const SignOut = () => {
-        clearChat()
+        // clearChat()
         window.sessionStorage.clear()
     }
     useEffect(() => {

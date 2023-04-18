@@ -1,13 +1,17 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {Button, Col, Input, Row} from 'antd';
 import {API_PATH, COMMANDS, MESSAGE_TYPE} from "../common/constant";
 import {useCookies} from "react-cookie";
 import io from "socket.io-client";
 import {ulid} from "ulid";
+import { update } from "idb-keyval";
+import { conversationsStore } from "../common/storage";
+import { ChatContext } from "../context/chatContext";
 
 
-const ChatForm = ({addMessage,setThinking,messages}) => {
+const ChatForm = ({addMessage, setThinking}) => {
 
+    const {selectedConversationId} = useContext(ChatContext);
     const [cookies] = useCookies(['id', 'Authorization']);
     const [requestSelected, setRequestSelected] = useState(API_PATH.TEXT)
     const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
@@ -181,8 +185,20 @@ const ChatForm = ({addMessage,setThinking,messages}) => {
             content: messageContent,
         };
         addMessage(message);
+        onUpdateTitle(message)
         return message;
     };
+
+    const onUpdateTitle = (message) => {
+        update(
+          selectedConversationId,
+          (oldValue) => ({...oldValue, title: message.content}),
+          conversationsStore
+        )
+          .then(() => {
+              // TODO  rerender view
+          })
+    }
 
 
 
