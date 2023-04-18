@@ -66,7 +66,7 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
         if (file) {
             formData.append("files", file);
         }
-        formData.append("id", cookies.id);
+        formData.append("uid", cookies.id);
         const response = await fetch(POST_URL, {
             method: 'POST',
             timeout: 600000,

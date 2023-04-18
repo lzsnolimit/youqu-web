@@ -2,7 +2,7 @@ import {MdClear} from 'react-icons/md';
 import {clearAllMessages} from "../common/storage";
 
 
-const ClearMemory = () => {
+const ClearAllConversations = () => {
 
     const clearAll = async () => {
         await clearAllMessages()
@@ -20,4 +20,4 @@ const ClearMemory = () => {
     )
 }
 
-export default ClearMemory;
+export default ClearAllConversations;
