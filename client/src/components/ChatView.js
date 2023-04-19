@@ -28,24 +28,22 @@ const ChatView = () => {
 
     useEffect(() => {
       loadMessages();
-    }, [selectedConversationId, messagesDbData.size])
-
+    }, [selectedConversationId, messagesDbData])
 
     const loadMessages = () => {
-        setTimeout(() => {
-            const withCVIdMessages = Array.from(messagesDbData.values())
-              .filter((message) => {
-                  const isAIDefaultMessage = message.id === '10001';
-                  return isAIDefaultMessage || (message.conversationId && message.conversationId === selectedConversationId)
-              })
+        const withCVIdMessages = Array.from(messagesDbData.values())
+          .filter((message) => {
+              const isAIDefaultMessage = message.id === '10001';
+              return isAIDefaultMessage || (message.conversationId && message.conversationId === selectedConversationId)
+          })
 
-            setMessages(withCVIdMessages);
-        }, 200)
+        setMessages(withCVIdMessages);
     }
 
 
     const addMessage = async (message) => {
-        await saveMessagesToDB({...message, conversationId: selectedConversationId});
+        const id = message?.messageID || undefined;
+        await saveMessagesToDB({...message, id, conversationId: selectedConversationId});
     }
 
 

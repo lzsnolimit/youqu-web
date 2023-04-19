@@ -23,12 +23,6 @@ const useIndexedDB = (store, initData) => {
         );
 
         const newMessages = new Map([...fetchedMessages, ...initMapData]);
-
-        // if(newMessages.size <= 0){
-        //   storeData(initData);
-        // } else {
-        //   setMapData(newMessages)
-        // }
         setMapData(newMessages)
       } catch (error) {
         console.error('Error fetching all messages:', error);
