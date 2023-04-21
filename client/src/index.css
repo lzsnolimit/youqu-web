@@ -2,6 +2,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@tailwind layer;
 
 *,
 *::before,
@@ -168,6 +169,26 @@
 
     .signin__tos {
         @apply text-white text-center font-bold p-2;
+    }
+
+    /* Conversations */
+    .conversations {
+        @apply flex flex-col text-white h-[100%] gap-1
+    }
+    .conversations__add_chat {
+        @apply flex p-3 cursor-pointer rounded-lg border border-gray-500
+        hover:bg-light-grey
+    }
+    .conversations__chat {
+        @apply flex py-3 px-3 items-center gap-3 relative rounded-md cursor-pointer break-all pr-14
+        hover:bg-light-grey
+    }
+    .conversations__title {
+        @apply flex-1 text-ellipsis overflow-hidden break-all relative
+    }
+    .conversations__icons {
+        @apply absolute flex right-2 z-10 text-gray-300 visible
+        /*hover:text-white*/
     }
 
 

@@ -1,5 +1,7 @@
 import {useState} from 'react';
 
+export const SelectedConversationIdKey = 'selectedConversationId'
+
 /**
  * A custom hook for managing state that is persisted in the local storage.
  *
@@ -31,7 +33,12 @@ const useLocalStorage = (key, initialValue) => {
             //console.log(error);
         }
     };
-    return [storedValue, setValue];
+
+    const removeItem = () => {
+        window.localStorage.removeItem(key);
+    }
+
+    return [storedValue, setValue, removeItem];
 };
 
 export default useLocalStorage
