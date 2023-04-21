@@ -53,6 +53,7 @@ const ChatForm = ({addMessage, setThinking}) => {
             messageID: ulid(),
             response_type: responseSelected,
             request_type: requestSelected,
+            conversation_id: selectedConversationId
         }
         //console.log("requestBody："+JSON.stringify(requestBody))
         createStreamMessage(requestBody.messageID);
