@@ -180,7 +180,7 @@ const ChatForm = ({addMessage, setThinking}) => {
     };
 
 
-    const createSendMessage = async (messageContent) => {
+    const createSendMessage = (messageContent) => {
         const message = {
             createdAt: Date.now(),
             messageID: ulid(),
@@ -192,7 +192,7 @@ const ChatForm = ({addMessage, setThinking}) => {
         if (selectedConversationId) {
             onUpdateTitle(message);
         } else {
-            await createConversation();
+            createConversation()
         }
         addMessage(message)
         return message;
