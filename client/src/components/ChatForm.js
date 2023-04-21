@@ -7,12 +7,16 @@ import {ulid} from "ulid";
 import { update } from "idb-keyval";
 import { conversationsStore } from "../common/storage";
 import { ChatContext } from "../context/chatContext";
+import useLocalStorage, { SelectedConversationIdKey } from "../hooks/useLocalStorage";
 
 
 const ChatForm = ({addMessage, setThinking}) => {
 
-    const {selectedConversationId} = useContext(ChatContext);
+    const {selectedConversationId, setSelectedConversationId, conversationsContext} = useContext(ChatContext);
+    const [_, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
+    const {saveDataToDB} = conversationsContext;
     const [cookies] = useCookies(['id', 'Authorization']);
+
     const [requestSelected, setRequestSelected] = useState(API_PATH.TEXT)
     const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
     const [inputMessage, setInputMessage] = useState("")
@@ -176,7 +180,7 @@ const ChatForm = ({addMessage, setThinking}) => {
     };
 
 
-    const createSendMessage = (messageContent) => {
+    const createSendMessage = async (messageContent) => {
         const message = {
             createdAt: Date.now(),
             messageID: ulid(),
@@ -184,10 +188,28 @@ const ChatForm = ({addMessage, setThinking}) => {
             type: MESSAGE_TYPE.TEXT,
             content: messageContent,
         };
-        addMessage(message);
-        onUpdateTitle(message)
+
+        if (selectedConversationId) {
+            onUpdateTitle(message);
+        } else {
+            await createConversation();
+        }
+        addMessage(message)
         return message;
     };
+
+    const createConversation = async () => {
+        const id = ulid();
+        const initCV = {
+            id,
+            title: 'New chat',
+            createdAt: Date.now(),
+        }
+
+        setSelectedConversationId(id);
+        setStoreConversationId(id);
+        await saveDataToDB(initCV)
+    }
 
     const onUpdateTitle = (message) => {
         update(

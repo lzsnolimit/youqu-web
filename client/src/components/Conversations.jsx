@@ -1,18 +1,17 @@
 import React, { useContext } from 'react';
-import useIndexedDB from "../hooks/useIndexedDB";
-import { conversationsStore } from "../common/storage";
 import { ulid } from "ulid";
 import useLocalStorage, { SelectedConversationIdKey } from "../hooks/useLocalStorage";
 import { ChatContext } from "../context/chatContext";
+import ConversationIcons from "./ConversationIcons";
 
 const Conversations = () => {
-  const [_, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
-  const {dbData , saveDataToDB} = useIndexedDB(conversationsStore);
+  const [_, setStoreConversationId, removeItem] = useLocalStorage(SelectedConversationIdKey, '');
+  const {selectedConversationId, setSelectedConversationId, conversationsContext, messagesContext} = useContext(ChatContext);
+  const {dbData, saveDataToDB, deleteDataById} = conversationsContext;
+  const {dbData: messagesDbData , deleteManyByIds} = messagesContext;
 
-  const {selectedConversationId, setSelectedConversationId} = useContext(ChatContext);
 
-
-  const onAddChat = () => {
+  const onAddConversation = () => {
     const id = ulid();
     const initCV = {
       id,
@@ -20,28 +19,49 @@ const Conversations = () => {
       createdAt: Date.now(),
     }
 
-    setSelectedConversationId(id);
+    onChangeConversation(id)
     saveDataToDB(initCV);
   }
 
-  const onChangeConversation = (conversation) => {
-    setStoreConversationId(conversation.id);
-    setSelectedConversationId(conversation.id);
+  const onChangeConversation = (id) => {
+    setStoreConversationId(id);
+    setSelectedConversationId(id);
   }
+
+  const onDeleteConversation = async () => {
+    // clear messages
+    const willDeleteMessageIds = Array.from(messagesDbData.values())
+      .filter((message) => message.conversationId === selectedConversationId)
+      .map((message) => message.id)
+    await deleteManyByIds(willDeleteMessageIds);
+
+    await deleteDataById(selectedConversationId);
+    removeItem();
+    setSelectedConversationId('');
+  }
+
+  const isSelected = (conversation) => selectedConversationId === conversation.id;
 
   return(
     <>
       <div className="conversations">
-        <div className="conversations__add_chat" onClick={onAddChat}>+ New chat</div>
+        <div className="conversations__add_chat" onClick={onAddConversation}>+ New chat</div>
         {Array.from(dbData.values()).map((conversation) => (
-          <button
+          <div
             key={conversation.id}
             className="conversations__chat"
-            style={{background: selectedConversationId === conversation.id && '#343541'}}
-            onClick={() => onChangeConversation(conversation)}
+            onClick={() => onChangeConversation(conversation.id)}
+            style={{background: isSelected(conversation) && '#343541'}}
           >
-            {conversation.title}
-          </button>
+            <div className="conversations__title">
+              {conversation.title}
+            </div>
+            <ConversationIcons
+              conversation={conversation}
+              onDelete={onDeleteConversation}
+              isSelected={isSelected}
+            />
+          </div>
         ))}
       </div>
     </>

@@ -3,8 +3,8 @@ import {ChatContextProvider} from './context/chatContext'
 import React, { useEffect, useState } from 'react';
 import {useCookies} from 'react-cookie';
 import { ulid } from "ulid";
-import useIndexedDB from "./hooks/useIndexedDB";
-import { conversationsStore } from "./common/storage";
+import useIndexedDB, { initialMsg } from "./hooks/useIndexedDB";
+import { conversationsStore, messagesStore } from "./common/storage";
 import useLocalStorage, { SelectedConversationIdKey } from "./hooks/useLocalStorage";
 
 const App = () => {
@@ -29,7 +29,9 @@ const App = () => {
         }
     }, [cookies]);
 
-    const {dbData: conversationsDbData , saveDataToDB: saveConversationsToDB} = useIndexedDB(conversationsStore);
+    const conversationsContext = useIndexedDB(conversationsStore);
+    const messagesContext = useIndexedDB(messagesStore, initialMsg);
+    const {dbData: conversationsDbData , saveDataToDB: saveConversationsToDB} = conversationsContext;
     const [storeConversationId, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
     const [selectedConversationId, setSelectedConversationId] = useState('')
 
@@ -65,7 +67,7 @@ const App = () => {
 
 
     return (
-        <ChatContextProvider value={{selectedConversationId, setSelectedConversationId}}>
+        <ChatContextProvider value={{selectedConversationId, setSelectedConversationId, conversationsContext, messagesContext}}>
            {console.log("Start app")}
             <div>
                 {/* TODO  loading page  */}
