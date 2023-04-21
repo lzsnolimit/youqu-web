@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import {MdClose, MdMenu} from 'react-icons/md'
 import {ChatContext} from '../context/chatContext'
 import DarkMode from './DarkMode'
+import Conversations from "./Conversations";
 import ClearAllConversations from "./ClearAllConversations";
 
 /**
@@ -12,13 +13,13 @@ import ClearAllConversations from "./ClearAllConversations";
  */
 const SideBar = () => {
     const [open, setOpen] = useState(true)
-    const [, , clearMessages] = useContext(ChatContext)
+    // const [, , clearMessages] = useContext(ChatContext)
     /**
      * Toggles the dark mode.
      */
-    const clearChat = () => clearMessages()
+    // const clearChat = () => clearMessages()
     const SignOut = () => {
-        clearChat()
+        // clearChat()
         window.sessionStorage.clear()
     }
     useEffect(() => {
@@ -27,7 +28,7 @@ const SideBar = () => {
             setOpen(false)
         }
     },[])
-    
+
 
     return (
         <section className={` ${open ? "w-72" : "w-20 "} sidebar`}>
@@ -54,6 +55,7 @@ const SideBar = () => {
             {/*</div>*/}
 
             <div className="nav__bottom">
+                <Conversations/>
                 <DarkMode open={open}/>
                 <ClearAllConversations></ClearAllConversations>
                 {/*<div className="nav">*/}

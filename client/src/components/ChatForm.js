@@ -1,14 +1,22 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {Button, Col, Input, Row} from 'antd';
 import {API_PATH, COMMANDS, MESSAGE_TYPE} from "../common/constant";
 import {useCookies} from "react-cookie";
 import io from "socket.io-client";
 import {ulid} from "ulid";
+import { update } from "idb-keyval";
+import { conversationsStore } from "../common/storage";
+import { ChatContext } from "../context/chatContext";
+import useLocalStorage, { SelectedConversationIdKey } from "../hooks/useLocalStorage";
 
 
-const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
+const ChatForm = ({addMessage, setThinking}) => {
 
+    const {selectedConversationId, setSelectedConversationId, conversationsContext} = useContext(ChatContext);
+    const [_, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
+    const {saveDataToDB} = conversationsContext;
     const [cookies] = useCookies(['id', 'Authorization']);
+
     const [requestSelected, setRequestSelected] = useState(API_PATH.TEXT)
     const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
     const [inputMessage, setInputMessage] = useState("")
@@ -30,11 +38,11 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
         const socket = io.connect(process.env.REACT_APP_WS_URL,{withCredentials: false,});
         socket.on('reply', function (data) {
             //console.log('reply' + JSON.stringify(data))
-            saveMessage(appendStreamMessage(data))
+            appendStreamMessage(data)
         });
         socket.on('final', function (data) {
             console.log('final' + JSON.stringify(data))
-            saveMessage(appendStreamMessage(data))
+            appendStreamMessage(data)
         });
         socket.on('disconnect', function (data) {
             console.log('disconnect')
@@ -45,6 +53,7 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
             messageID: ulid(),
             response_type: responseSelected,
             request_type: requestSelected,
+            conversation_id: selectedConversationId
         }
         //console.log("requestBody："+JSON.stringify(requestBody))
         createStreamMessage(requestBody.messageID);
@@ -142,7 +151,6 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
         // Call addMessage function to update UI
         console.log("Add message:"+JSON.stringify(message))
         addMessage(message);
-        saveMessage(message);
         return message;
     };
 
@@ -160,7 +168,6 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
         // Call addMessage function to update UI
         //console.log("createStreamMessage:" + JSON.stringify(message))
         addMessage(message);
-        return message;
     };
 
     const createStreamMessage = (messageID) => {
@@ -175,7 +182,6 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
         // Call addMessage function to update UI
         //console.log("createStreamMessage:" + JSON.stringify(message))
         addMessage(message);
-        saveMessage(message)
         return message;
     };
 
@@ -188,10 +194,39 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
             type: MESSAGE_TYPE.TEXT,
             content: messageContent,
         };
-        addMessage(message);
-        saveMessage(message);
+
+        if (selectedConversationId) {
+            onUpdateTitle(message);
+        } else {
+            createConversation()
+        }
+        addMessage(message)
         return message;
     };
+
+    const createConversation = async () => {
+        const id = ulid();
+        const initCV = {
+            id,
+            title: 'New chat',
+            createdAt: Date.now(),
+        }
+
+        setSelectedConversationId(id);
+        setStoreConversationId(id);
+        await saveDataToDB(initCV)
+    }
+
+    const onUpdateTitle = (message) => {
+        update(
+          selectedConversationId,
+          (oldValue) => ({...oldValue, title: message.content}),
+          conversationsStore
+        )
+          .then(() => {
+              // TODO  rerender view
+          })
+    }
 
 
 
