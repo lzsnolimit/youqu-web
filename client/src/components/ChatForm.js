@@ -80,10 +80,15 @@ const ChatForm = ({addMessage,setThinking,messages,saveMessage}) => {
         //await processReplyMessage(response, MESSAGE_TYPE.TEXT)
 
         if (response.status!=200){
-            createReplyMessage("Error with response code:"+response.status);
+            const data={
+                content:"Error with response code:"+response.status,
+                messageID:ulid()
+            }
+            createReplyMessage(data);
             //console.log(`Request failed with status code ${response.status}`)
         }else {
             const data = await response.json()
+            data["messageID"]=ulid()
             createReplyMessage(data)
         }
         setThinking(false)
