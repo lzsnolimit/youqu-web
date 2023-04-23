@@ -54,7 +54,9 @@ const Conversations = () => {
             style={{background: isSelected(conversation) && '#343541'}}
           >
             <div className="conversations__title">
-              {conversation.title}
+              {conversation.title.length > 8
+                  ? conversation.title.substr(0, 8) + "..."
+                  : conversation.title}
             </div>
             <ConversationIcons
               conversation={conversation}
