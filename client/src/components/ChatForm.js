@@ -187,6 +187,10 @@ const ChatForm = ({addMessage, setThinking}) => {
         return message;
     };
 
+    const handleSuggestionClick = (suggestion) => {
+        setInputMessage(suggestion);
+    };
+
 
     const createSendMessage = (messageContent) => {
         const message = {
@@ -221,6 +225,20 @@ const ChatForm = ({addMessage, setThinking}) => {
 
 
     return (
+
+        <>
+            <button
+                type="button"
+                onClick={() => handleSuggestionClick('#清除记忆')}
+            >
+                #清除记忆
+            </button>
+            <button
+                type="button"
+                onClick={() => handleSuggestionClick('#菜单')}
+            >
+                #菜单
+            </button>
         <form className='form'>
             <Row className='chat-footer'>
                 <input type="file" id="btn_file" ref={fileInputRef} accept=".pdf" onChange={processFile}
@@ -236,6 +254,7 @@ const ChatForm = ({addMessage, setThinking}) => {
                 </Col>
             </Row>
         </form>
+        </>
     )
 
 };
