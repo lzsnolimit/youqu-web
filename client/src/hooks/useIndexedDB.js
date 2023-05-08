@@ -3,14 +3,7 @@ import { get, keys, set, del, delMany } from 'idb-keyval';
 import {ulid} from 'ulid'
 import { MESSAGE_TYPE } from "../common/constant";
 
-export const initialMsg = {
-  id: '10001',
-  createdAt: Date.now(),
-  messageID:ulid(),
-  content: '你好，我是话痨机器人，有什么问题你可以直接问我。另外你还可以发送"#菜单"查看我支持的指令。',
-  ai: true,
-  type: MESSAGE_TYPE.INTRODUCTION,
-};
+
 
 
 

@@ -3,9 +3,10 @@ import {ChatContextProvider} from './context/chatContext'
 import React, { useEffect, useState } from 'react';
 import {useCookies} from 'react-cookie';
 import { ulid } from "ulid";
-import useIndexedDB, { initialMsg } from "./hooks/useIndexedDB";
+import useIndexedDB from "./hooks/useIndexedDB";
 import { conversationsStore, messagesStore } from "./common/storage";
 import useLocalStorage, { SelectedConversationIdKey } from "./hooks/useLocalStorage";
+import {initialMsg} from "./common/constant";
 
 const App = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['id','Authorization']);
@@ -29,11 +30,13 @@ const App = () => {
         }
     }, [cookies]);
 
+
     const conversationsContext = useIndexedDB(conversationsStore);
     const messagesContext = useIndexedDB(messagesStore, initialMsg);
     const {dbData: conversationsDbData , saveDataToDB: saveConversationsToDB} = conversationsContext;
     const [storeConversationId, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
     const [selectedConversationId, setSelectedConversationId] = useState('')
+    const [selectedSystemPromote,setSelectedSystemPromote]=useState('')
 
     const [initLoadConversationsIsDone, setInitLoadConversationsIsDone] = useState(false);
     const [saveLoading, setSaveLoading] = useState(false);
@@ -60,14 +63,14 @@ const App = () => {
         }
         setSaveLoading(true);
         const id = ulid();
-        saveConversationsToDB({id, title: 'New chat', createAt: Date.now()})
+        saveConversationsToDB({id, title: 'AI bot', promote: "你是ChatGPT, 一个由OpenAI训练的大型语言模型, 你旨在回答并解决人们的任何问题，并且可以使用多种语言与人交流。",createAt: Date.now()})
           .then(() => setStoreConversationId(id))
           .finally(() => setSaveLoading(false));
     }, [initLoadConversationsIsDone])
 
 
     return (
-        <ChatContextProvider value={{selectedConversationId, setSelectedConversationId, conversationsContext, messagesContext}}>
+        <ChatContextProvider value={{selectedConversationId, setSelectedConversationId, conversationsContext, messagesContext,selectedSystemPromote,setSelectedSystemPromote}}>
            {console.log("Start app")}
             <div>
                 {/* TODO  loading page  */}

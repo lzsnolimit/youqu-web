@@ -8,7 +8,7 @@ import { ChatContext } from "../context/chatContext";
  * A chat view component that displays a list of messages and a form for sending new messages.
  */
 const ChatView = () => {
-    const {selectedConversationId, messagesContext} = useContext(ChatContext);
+    const {selectedConversationId, messagesContext,systemPromote} = useContext(ChatContext);
     const {dbData: messagesDbData , saveDataToDB: saveMessagesToDB} = messagesContext;
 
     const [messages, setMessages] = useState([]);
@@ -16,6 +16,7 @@ const ChatView = () => {
 
     useEffect(() => {
       loadMessages();
+
     }, [selectedConversationId, messagesDbData])
 
     const loadMessages = () => {
@@ -24,7 +25,6 @@ const ChatView = () => {
               const isAIDefaultMessage = message.id === '10001';
               return isAIDefaultMessage || (message.conversationId && message.conversationId === selectedConversationId)
           })
-
         setMessages(withCVIdMessages);
     }
 

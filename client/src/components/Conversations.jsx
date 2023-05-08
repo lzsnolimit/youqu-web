@@ -1,31 +1,27 @@
-import React, { useContext } from 'react';
+import React, {useContext, useState} from 'react';
 import { ulid } from "ulid";
 import useLocalStorage, { SelectedConversationIdKey } from "../hooks/useLocalStorage";
 import { ChatContext } from "../context/chatContext";
 import ConversationIcons from "./ConversationIcons";
+import ConversationSettingModal from "./ConversationSettingModal";
 
 const Conversations = () => {
   const [_, setStoreConversationId, removeItem] = useLocalStorage(SelectedConversationIdKey, '');
-  const {selectedConversationId, setSelectedConversationId, conversationsContext, messagesContext} = useContext(ChatContext);
+  const {selectedConversationId, setSelectedConversationId, conversationsContext, messagesContext,setSelectedSystemPromote} = useContext(ChatContext);
   const {dbData, saveDataToDB, deleteDataById} = conversationsContext;
   const {dbData: messagesDbData , deleteManyByIds} = messagesContext;
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
 
 
-  const onAddConversation = () => {
-    const id = ulid();
-    const initCV = {
-      id,
-      title: 'New chat',
-      createdAt: Date.now(),
-    }
-
-    onChangeConversation(id)
-    saveDataToDB(initCV);
+  const handleSettingsModalCancel = (e) => {
+    e.stopPropagation();
+    setIsSettingsModalVisible(false)
   }
 
-  const onChangeConversation = (id) => {
+  const onChangeConversation = (id,promote) => {
     setStoreConversationId(id);
     setSelectedConversationId(id);
+    setSelectedSystemPromote(promote)
   }
 
   const onDeleteConversation = async () => {
@@ -45,12 +41,13 @@ const Conversations = () => {
   return(
     <>
       <div className="conversations">
-        <div className="conversations__add_chat" onClick={onAddConversation}>+ New chat</div>
+        <div className="conversations__add_chat" onClick={() => setIsSettingsModalVisible(true)}>+ New chat</div>
+        <ConversationSettingModal setIsSettingsModalVisible={setIsSettingsModalVisible} isSettingsModalVisible={isSettingsModalVisible} handleSettingsModalCancel={handleSettingsModalCancel}/>
         {Array.from(dbData.values()).map((conversation) => (
           <div
             key={conversation.id}
             className="conversations__chat"
-            onClick={() => onChangeConversation(conversation.id)}
+            onClick={() => onChangeConversation(conversation.id,conversation.promote)}
             style={{background: isSelected(conversation) && '#343541'}}
           >
             <div className="conversations__title">

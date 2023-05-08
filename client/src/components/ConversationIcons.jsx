@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import {MdOutlineDelete, MdOutlineDone, MdOutlineClear} from 'react-icons/md'
+import {
+  MdOutlineDelete,
+  MdOutlineDone,
+  MdOutlineClear,
+  MdOutlineUpdate,
+  MdDriveFileRenameOutline,
+  MdOutlineSettings
+} from 'react-icons/md'
 
 const ConfirmType = {
   DELETE: 'delete',
@@ -10,11 +17,24 @@ function ConversationIcons({conversation, onDelete, isSelected}) {
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmType, setConfirmType] = useState(ConfirmType.DELETE);
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
+
 
   const onDeleteConversation = (e) => {
     e.stopPropagation();
     setShowConfirm(true);
     setConfirmType(ConfirmType.DELETE)
+  }
+
+  const onSettingConversation = (e) => {
+    e.stopPropagation();
+    setIsSettingsModalVisible(true)
+  }
+
+
+  const handleSettingsModalCancel = (e) => {
+    e.stopPropagation();
+    setIsSettingsModalVisible(false)
   }
 
   const onCancel = (e) => {
@@ -29,6 +49,11 @@ function ConversationIcons({conversation, onDelete, isSelected}) {
     } else {
       onConfirmEdit();
     }
+  }
+
+  const setConversation=(conversationName,systemPromote)=>{
+    console.log(systemPromote)
+    setIsSettingsModalVisible(false)
   }
 
   const onConfirmEdit = () => {}
@@ -48,9 +73,15 @@ function ConversationIcons({conversation, onDelete, isSelected}) {
           </button>
         </>
       ) : (
+          <>
+        {/*<button className="p-1 hover:text-white">*/}
+        {/*  <MdOutlineSettings size={20} onClick={onSettingConversation} />*/}
+        {/*</button>*/}
+
         <button className="p-1 hover:text-white">
           <MdOutlineDelete size={20} onClick={onDeleteConversation} />
         </button>
+          </>
       )}
     </div>
   )
