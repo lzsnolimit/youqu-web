@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Modal } from 'antd';
 import {
   MdOutlineDelete,
   MdOutlineDone,
@@ -8,7 +7,6 @@ import {
   MdDriveFileRenameOutline,
   MdOutlineSettings
 } from 'react-icons/md'
-import ConversationSetting from "./ConversationSetting";
 
 const ConfirmType = {
   DELETE: 'delete',
@@ -76,19 +74,9 @@ function ConversationIcons({conversation, onDelete, isSelected}) {
         </>
       ) : (
           <>
-        <button className="p-1 hover:text-white">
-          <MdOutlineSettings size={20} onClick={onSettingConversation} />
-        </button>
-            <Modal
-                title="Conversation Setting"
-                open={isSettingsModalVisible}
-                onCancel={handleSettingsModalCancel}
-                footer={null}
-                centered
-            >
-              <ConversationSetting setConversation={setConversation}/>
-            </Modal>
-
+        {/*<button className="p-1 hover:text-white">*/}
+        {/*  <MdOutlineSettings size={20} onClick={onSettingConversation} />*/}
+        {/*</button>*/}
 
         <button className="p-1 hover:text-white">
           <MdOutlineDelete size={20} onClick={onDeleteConversation} />

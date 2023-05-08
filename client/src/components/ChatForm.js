@@ -12,7 +12,7 @@ import useLocalStorage, { SelectedConversationIdKey } from "../hooks/useLocalSto
 
 const ChatForm = ({addMessage, setThinking}) => {
 
-    const {selectedConversationId, setSelectedConversationId, conversationsContext} = useContext(ChatContext);
+    const {selectedConversationId, conversationsContext,selectedSystemPromote,setSelectedSystemPromote} = useContext(ChatContext);
     const [_, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
     const {saveDataToDB} = conversationsContext;
     const [cookies] = useCookies(['id', 'Authorization']);
@@ -53,9 +53,10 @@ const ChatForm = ({addMessage, setThinking}) => {
             messageID: ulid(),
             response_type: responseSelected,
             request_type: requestSelected,
-            conversation_id: selectedConversationId
+            conversation_id: selectedConversationId,
+            system_prompt:selectedSystemPromote,
         }
-        //console.log("requestBody："+JSON.stringify(requestBody))
+        console.log("requestBody："+JSON.stringify(requestBody))
         createStreamMessage(requestBody.messageID);
         socket.emit("message", requestBody);
     }
@@ -196,27 +197,15 @@ const ChatForm = ({addMessage, setThinking}) => {
             content: messageContent,
         };
 
-        if (selectedConversationId) {
-            onUpdateTitle(message);
-        } else {
-            createConversation()
-        }
+        // if (selectedConversationId) {
+        //     onUpdateTitle(message);
+        // } else {
+        //     createConversation()
+        // }
         addMessage(message)
         return message;
     };
 
-    const createConversation = async () => {
-        const id = ulid();
-        const initCV = {
-            id,
-            title: 'New chat',
-            createdAt: Date.now(),
-        }
-
-        setSelectedConversationId(id);
-        setStoreConversationId(id);
-        await saveDataToDB(initCV)
-    }
 
     const onUpdateTitle = (message) => {
         update(
@@ -238,7 +227,7 @@ const ChatForm = ({addMessage, setThinking}) => {
                     style={{display: 'none'}}/>
 
                 <Col sm={20} xs={18}>
-                    <Input.TextArea ref={inputRef} value={inputMessage} onChange={event => {
+                    <Input.TextArea disabled={!selectedConversationId} ref={inputRef} value={inputMessage} onChange={event => {
                         setInputMessage(event.target.value)
                     }} showCount={true} autoSize={{minRows: 3, maxRows: 5}} className='chatview__textarea-message'/>
                 </Col>

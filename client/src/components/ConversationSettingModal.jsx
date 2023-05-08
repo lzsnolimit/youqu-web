@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React, {useContext, useState} from "react";
 import {Select} from "antd";
 import {PROMOTES} from "../common/constant";
+import { Modal } from 'antd';
+import {ulid} from "ulid";
+import useLocalStorage, {SelectedConversationIdKey} from "../hooks/useLocalStorage";
+import {ChatContext} from "../context/chatContext";
 
-const ConversationSetting = ({setConversation}) => {
+const ConversationSettingModal = ({isSettingsModalVisible,handleSettingsModalCancel,setIsSettingsModalVisible}) => {
     //const [promoteSelected, setPromoteSelected] = useState("");
     const [conversationName, setConversationName] = useState("");
     const [systemPromote, setSystemPromote] = useState("");
+    const [_, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
+    const {setSelectedConversationId, conversationsContext,setSelectedSystemPromote} = useContext(ChatContext);
+    const {saveDataToDB} = conversationsContext;
 
     const handleChange = (value) => {
         //setPromoteSelected(value);
@@ -16,11 +23,34 @@ const ConversationSetting = ({setConversation}) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         //console.log({ textInput: conversationName, textAreaInput: systemPromote });
-        setConversation(conversationName,systemPromote)
+        const id = ulid();
+        const initCV = {
+            id,
+            title: conversationName,
+            createdAt: Date.now(),
+            promote: systemPromote,
+        }
+        setSelectedSystemPromote(systemPromote)
+        setStoreConversationId(id);
+        setSelectedConversationId(id);
+        saveDataToDB(initCV);
+        setIsSettingsModalVisible(false);
     };
     const { Option } = Select;
 
+
+
+
+
+
     return (
+        <Modal
+            title="Conversation Setting"
+            open={isSettingsModalVisible}
+            onCancel={handleSettingsModalCancel}
+            footer={null}
+            centered
+        >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <form onSubmit={handleSubmit} className="w-full max-w-sm">
                 <div className="mb-4">
@@ -80,7 +110,8 @@ const ConversationSetting = ({setConversation}) => {
                 </div>
             </form>
         </div>
+        </Modal>
     );
 };
 
-export default ConversationSetting;
+export default ConversationSettingModal;
