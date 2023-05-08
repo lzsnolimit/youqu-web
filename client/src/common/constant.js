@@ -36,7 +36,7 @@ export const initialMsg = {
 
 export const PROMOTES = [
     {
-        "act": "简介模式",
+        "act": "简洁模式",
         "prompt": "不要说废话，不要端水，只给我我要的答案。"
     },
     {
