@@ -57,16 +57,16 @@ const App = () => {
     /**
      * If the data obtained in indexedDB is empty, an initial value is set
      */
-    useEffect(() => {
-        if(!initLoadConversationsIsDone || conversationsDbData.size > 0) {
-            return;
-        }
-        setSaveLoading(true);
-        const id = ulid();
-        saveConversationsToDB({id, title: 'AI bot', promote: "你是ChatGPT, 一个由OpenAI训练的大型语言模型, 你旨在回答并解决人们的任何问题，并且可以使用多种语言与人交流。",createAt: Date.now()})
-          .then(() => setStoreConversationId(id))
-          .finally(() => setSaveLoading(false));
-    }, [initLoadConversationsIsDone])
+    // useEffect(() => {
+    //     if(!initLoadConversationsIsDone || conversationsDbData.size > 0) {
+    //         return;
+    //     }
+    //     setSaveLoading(true);
+    //     const id = ulid();
+    //     saveConversationsToDB({id, title: 'AI bot', promote: "你是ChatGPT, 一个由OpenAI训练的大型语言模型, 你旨在回答并解决人们的任何问题，并且可以使用多种语言与人交流。",createAt: Date.now()})
+    //       .then(() => setStoreConversationId(id))
+    //       .finally(() => setSaveLoading(false));
+    // }, [initLoadConversationsIsDone])
 
 
     return (
