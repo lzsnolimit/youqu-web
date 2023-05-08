@@ -1,4 +1,4 @@
-# ChatGPT clone with DALL.E image generation model
+# 做一个有趣的人
 
 *you can checkout the app [here](https://youqu.app/)
 
