@@ -34,16 +34,12 @@ const App = () => {
     const conversationsContext = useIndexedDB(conversationsStore);
     const messagesContext = useIndexedDB(messagesStore, initialMsg);
     const {dbData: conversationsDbData , saveDataToDB: saveConversationsToDB} = conversationsContext;
-    const [storeConversationId, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
     const [selectedConversationId, setSelectedConversationId] = useState('')
     const [selectedSystemPromote,setSelectedSystemPromote]=useState('')
 
     const [initLoadConversationsIsDone, setInitLoadConversationsIsDone] = useState(false);
     const [saveLoading, setSaveLoading] = useState(false);
 
-    useEffect(() => {
-        setSelectedConversationId(storeConversationId);
-    }, [storeConversationId])
 
     /**
      * The initialization waits for the data in indexedDB to be asynchronously fetched
@@ -51,6 +47,7 @@ const App = () => {
     useEffect(() => {
         setTimeout(() => {
             setInitLoadConversationsIsDone(true)
+
         }, 300)
     }, [conversationsDbData.size])
 
