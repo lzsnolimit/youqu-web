@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import {useCookies} from 'react-cookie';
 import { ulid } from "ulid";
 import useIndexedDB from "./hooks/useIndexedDB";
-import { conversationsStore, messagesStore } from "./common/storage";
+import { conversationsStore } from "./common/storage";
 import useLocalStorage, { SelectedConversationIdKey } from "./hooks/useLocalStorage";
-import {initialMsg} from "./common/constant";
+// import {initialMsg} from "./common/constant";
 
 const App = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['id','Authorization']);
@@ -32,7 +32,7 @@ const App = () => {
 
 
     const conversationsContext = useIndexedDB(conversationsStore);
-    const messagesContext = useIndexedDB(messagesStore, initialMsg);
+    // const messagesContext = useIndexedDB(messagesStore, initialMsg);
     const {dbData: conversationsDbData , saveDataToDB: saveConversationsToDB} = conversationsContext;
     const [storeConversationId, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
     const [selectedConversationId, setSelectedConversationId] = useState('')
@@ -75,7 +75,7 @@ const App = () => {
 
 
     return (
-        <ChatContextProvider value={{selectedConversationId, setSelectedConversationId, conversationsContext, messagesContext,selectedSystemPromote,setSelectedSystemPromote}}>
+        <ChatContextProvider value={{selectedConversationId, setSelectedConversationId, conversationsContext,selectedSystemPromote,setSelectedSystemPromote}}>
            {console.log("Start app")}
             <div>
                 {/* TODO  loading page  */}

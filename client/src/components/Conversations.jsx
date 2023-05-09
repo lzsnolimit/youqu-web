@@ -4,15 +4,18 @@ import useLocalStorage, { SelectedConversationIdKey } from "../hooks/useLocalSto
 import { ChatContext } from "../context/chatContext";
 import ConversationIcons from "./ConversationIcons";
 import ConversationSettingModal from "./ConversationSettingModal";
+import { messagesStore } from "../common/storage";
+import {initialMsg} from "../common/constant";
+import useIndexedDB from "../hooks/useIndexedDB";
 
 const Conversations = () => {
   const [_, setStoreConversationId, removeItem] = useLocalStorage(SelectedConversationIdKey, '');
-  const {selectedConversationId, setSelectedConversationId, conversationsContext, messagesContext,setSelectedSystemPromote} = useContext(ChatContext);
+  const {selectedConversationId, setSelectedConversationId, conversationsContext,setSelectedSystemPromote} = useContext(ChatContext);
   const {dbData, saveDataToDB, deleteDataById} = conversationsContext;
-  const {dbData: messagesDbData , deleteManyByIds} = messagesContext;
+  
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
-
-
+  const messagesContext = useIndexedDB(messagesStore, initialMsg);
+  const {dbData: messagesDbData , deleteManyByIds} = messagesContext;
   const handleSettingsModalCancel = (e) => {
     e.stopPropagation();
     setIsSettingsModalVisible(false)
