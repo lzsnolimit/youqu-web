@@ -36,6 +36,10 @@ export const initialMsg = {
 
 export const PROMOTES = [
     {
+        "act": "自定义",
+        "prompt": ""
+    },
+    {
         "act": "简洁模式",
         "prompt": "用极简的语句回复。"
     },
