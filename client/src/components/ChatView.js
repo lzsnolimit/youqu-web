@@ -2,14 +2,18 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import ChatArea from "./ChatArea";
 import ChatForm from "./ChatForm";
 import { ChatContext } from "../context/chatContext";
-
+import { messagesStore } from "../common/storage";
+import {initialMsg} from "../common/constant";
+import useIndexedDB from "../hooks/useIndexedDB";
 
 /**
  * A chat view component that displays a list of messages and a form for sending new messages.
  */
 const ChatView = () => {
-    const {selectedConversationId, messagesContext,systemPromote} = useContext(ChatContext);
-    const {dbData: messagesDbData , saveDataToDB: saveMessagesToDB} = messagesContext;
+    const {selectedConversationId,systemPromote} = useContext(ChatContext);
+    const messagesContext = useIndexedDB(messagesStore, initialMsg);
+    const {dbData: messagesDbData , saveDataToDB: saveMessagesToDB} = messagesContext
+    // const {dbData: messagesDbData , saveDataToDB: saveMessagesToDB} = messagesContext;
 
     const [messages, setMessages] = useState([]);
     const [thinking, setThinking] = useState(false)
