@@ -30,11 +30,11 @@ const ConversationSettingModal = ({isSettingsModalVisible,handleSettingsModalCan
             createdAt: Date.now(),
             promote: systemPromote,
         }
-        setSelectedSystemPromote(systemPromote)
         setStoreConversationId(id);
         setSelectedConversationId(id);
         saveDataToDB(initCV);
         setIsSettingsModalVisible(false);
+        setSelectedSystemPromote(systemPromote);
     };
     const { Option } = Select;
 
