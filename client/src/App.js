@@ -52,7 +52,7 @@ const App = () => {
         setTimeout(() => {
             setInitLoadConversationsIsDone(true)
             Array.from(conversationsDbData.values()).map((conversation) => {
-                if (conversation.id==storeConversationId){
+                if (conversation.id==selectedConversationId){
                     setSelectedSystemPromote(conversation.promote)
                 }
                     })
