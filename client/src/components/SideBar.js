@@ -1,6 +1,5 @@
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {MdClose, MdMenu} from 'react-icons/md'
-import {ChatContext} from '../context/chatContext'
 import DarkMode from './DarkMode'
 import Conversations from "./Conversations";
 import ClearAllConversations from "./ClearAllConversations";

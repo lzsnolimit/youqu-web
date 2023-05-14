@@ -1,12 +1,5 @@
-import React, { useState } from 'react';
-import {
-  MdOutlineDelete,
-  MdOutlineDone,
-  MdOutlineClear,
-  MdOutlineUpdate,
-  MdDriveFileRenameOutline,
-  MdOutlineSettings
-} from 'react-icons/md'
+import React, {useState} from 'react';
+import {MdOutlineClear, MdOutlineDelete, MdOutlineDone} from 'react-icons/md'
 
 const ConfirmType = {
   DELETE: 'delete',
