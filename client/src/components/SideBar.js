@@ -3,6 +3,7 @@ import {MdClose, MdMenu} from 'react-icons/md'
 import DarkMode from './DarkMode'
 import Conversations from "./Conversations";
 import ClearAllConversations from "./ClearAllConversations";
+import Signout from "./SignOut";
 
 /**
  * A sidebar component that displays a list of nav items and a toggle
@@ -57,6 +58,7 @@ const SideBar = () => {
                 <Conversations/>
                 <DarkMode open={open}/>
                 <ClearAllConversations></ClearAllConversations>
+                <Signout></Signout>
                 {/*<div className="nav">*/}
                 {/*    <a href='https://github.com/EyuCoder/chatgpt-clone' className="nav__item">*/}
                 {/*        <div className="nav__icons">*/}
