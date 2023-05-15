@@ -1,4 +1,4 @@
-# 做一个有趣的人
+# 有趣
 
 *you can checkout the app [here](https://youqu.app/)
 
