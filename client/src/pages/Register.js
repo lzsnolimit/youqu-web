@@ -23,7 +23,7 @@ const Register = () => {
             "email": email,
             "password": password,
             "username": username,
-            "phone": "13006601253"
+            "phone": phone
         });
 
         var requestOptions = {
