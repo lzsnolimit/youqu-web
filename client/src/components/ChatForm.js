@@ -118,10 +118,18 @@ const ChatForm = ({addMessage, setThinking}) => {
     /**
      * Sends our prompt to our API and get response to our request from openai.
      *
-     * @param {Event} e - The submit event of the form.
+     * @param {Event} event - The submit event of the form.
      */
 
-
+    // bind alt+enter to send message
+    const keyboardSend = (event) => {
+        let keyCode = event.keyCode || event.charCode;
+        let altKey = event.altKey;
+        if(altKey && keyCode === 13) {
+            send()
+            setInputMessage('')
+        }
+    };
 
     const send = () => {
         switch (inputMessage.trim()) {
@@ -247,7 +255,7 @@ const ChatForm = ({addMessage, setThinking}) => {
                 <Col sm={20} xs={18}>
                     <Input.TextArea disabled={!selectedConversationId} ref={inputRef} value={inputMessage} onChange={event => {
                         setInputMessage(event.target.value)
-                    }} showCount={true} autoSize={{minRows: 3, maxRows: 5}} className='chatview__textarea-message'/>
+                    }} showCount={true} autoSize={{minRows: 3, maxRows: 5}} onKeyPress={keyboardSend} className='chatview__textarea-message'/>
                 </Col>
                 <Col sm={4} xs={6} style={{padding:'.5rem'}}>
                     <Button type="submit" className='chatview__btn-send' disabled={!inputMessage} onClick={send}>Send</Button>
