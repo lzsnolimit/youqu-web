@@ -35,7 +35,7 @@ const ChatForm = ({addMessage, setThinking}) => {
 
     const sendStreamMessage = (message) => {
         //console.log("sendStreamMessage:", JSON.stringify(message));
-        const socket = io.connect(process.env.REACT_APP_WS_URL,{withCredentials: false,});
+        const socket = io.connect(process.env.REACT_APP_WS_URL,{withCredentials: true,});
         socket.on('reply', function (data) {
             //console.log('reply' + JSON.stringify(data))
             appendStreamMessage(data)
