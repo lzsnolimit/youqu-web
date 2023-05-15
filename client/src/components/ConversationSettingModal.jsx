@@ -1,7 +1,6 @@
 import React, {useContext, useState} from "react";
-import {Select} from "antd";
+import {Modal, Select} from "antd";
 import {PROMOTES} from "../common/constant";
-import { Modal } from 'antd';
 import {ulid} from "ulid";
 import useLocalStorage, {SelectedConversationIdKey} from "../hooks/useLocalStorage";
 import {ChatContext} from "../context/chatContext";
@@ -35,6 +34,7 @@ const ConversationSettingModal = ({isSettingsModalVisible,handleSettingsModalCan
         saveDataToDB(initCV);
         setIsSettingsModalVisible(false);
         setSelectedSystemPromote(systemPromote);
+        //window.location.reload(true);
     };
     const { Option } = Select;
 

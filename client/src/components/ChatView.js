@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import ChatArea from "./ChatArea";
 import ChatForm from "./ChatForm";
-import { ChatContext } from "../context/chatContext";
-import { messagesStore } from "../common/storage";
+import {ChatContext} from "../context/chatContext";
+import {messagesStore} from "../common/storage";
 import {initialMsg} from "../common/constant";
 import useIndexedDB from "../hooks/useIndexedDB";
 
