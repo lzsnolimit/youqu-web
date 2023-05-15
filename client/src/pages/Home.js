@@ -8,12 +8,12 @@ import {ChatContextProvider} from "../context/chatContext";
 import {useCookies} from "react-cookie";
 
 const Home = () => {
-    const [cookies, setCookie, removeCookie] = useCookies(['Authorization']);
-    useEffect(() => {
-        if (cookies.Authorization == null) {
-            window.location.href = '/login';
-        }
-    }, [cookies]);
+    // const [cookies, setCookie, removeCookie] = useCookies(['Authorization']);
+    // useEffect(() => {
+    //     if (cookies.Authorization == null) {
+    //         window.location.href = '/login';
+    //     }
+    // }, [cookies]);
 
     const conversationsContext = useIndexedDB(conversationsStore);
     // const messagesContext = useIndexedDB(messagesStore, initialMsg);
