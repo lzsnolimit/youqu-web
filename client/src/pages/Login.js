@@ -11,6 +11,15 @@ const Login = () => {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
+
+        //if email is not valid
+        if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+            setErrorMessage('邮箱格式不正确');
+            return false;
+        }
+
+
+
         var raw = JSON.stringify({
             "email": email,
             "password": password
@@ -72,6 +81,9 @@ const Login = () => {
                 <p className="mt-2 text-center text-sm text-gray-600">
                     Don't have an account? <Link to="/register"
                                                  className="font-medium text-indigo-600 hover:text-indigo-500">Register</Link>
+                </p>
+                <p className="text-center text-sm text-gray-600">
+                    Forgot your password? <Link to="/forget_password" className="font-medium text-indigo-600 hover:text-indigo-500">Reset it here</Link>
                 </p>
             </div>
         </div>

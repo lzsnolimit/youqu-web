@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, {useRef, useState} from 'react';
+import {Link, redirect} from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
 
@@ -10,7 +10,8 @@ function ResetPassword() {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false); // 新增状态，用于判断是否显示隐藏的页面
+    const loginRef = useRef(); // 新增状态，用于判断是否显示隐藏的页面
     const location = useLocation();
 
     function getQueryParams(queryString) {
@@ -19,7 +20,7 @@ function ResetPassword() {
         return queryParams;
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (newPassword !== confirmPassword) {
             setErrorMessage('两次输入的密码不一致');
@@ -34,11 +35,49 @@ function ResetPassword() {
         console.log('Reset password:', newPassword);
         const queryParams = getQueryParams(location.search);
         console.log(queryParams.token); // 这里将输出 token 的值
+        const token = queryParams.token;
+        const response = await reset_password(token, newPassword);
 
+        if (!response || response.message !== "Reset password success") {
+            setErrorMessage('Reset password url expired');
+        } else {
+            setErrorMessage('');
+            //redirect to home page
+            setShowSuccessMessage(true); // 设置 showMessage 状态为 true，显示隐藏的页面
+            setTimeout(() => {  // 3秒后跳转到登录页面
+                loginRef.current.click();
+            }, 3000);
+        }
     };
+    async function reset_password(token, password) {
+        try {
+            const response = await fetch(process.env.REACT_APP_BASE_URL + 'reset_password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token, password }),
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error:', error);
+            return null;
+        }
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8" style={{ paddingBottom: '10%' }}>
+            {showSuccessMessage ? ( // 根据 showMessage 状态决定显示的内容
+                <div className="absolute top-0 left-0 mt-6 ml-6 space-y-2">
+                    <h2 className="text-xl font-semibold text-gray-900">Password reset success</h2>
+                    <Link to="/login" ref={loginRef} className="text-indigo-600 hover:text-indigo-500">
+                        Go to login page
+                    </Link>
+                </div>
+            ) : (
+
+
             <div className="max-w-md w-full space-y-8">
                 <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Reset Password</h2>
                 <form onSubmit={handleSubmit} className="mt-8 space-y-6">
@@ -73,6 +112,7 @@ function ResetPassword() {
                                                   className="font-medium text-indigo-600 hover:text-indigo-500">Login</Link>
                 </p>
             </div>
+            )}
         </div>
     );
 }
