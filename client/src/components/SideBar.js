@@ -18,10 +18,7 @@ const SideBar = () => {
      * Toggles the dark mode.
      */
     // const clearChat = () => clearMessages()
-    const SignOut = () => {
-        // clearChat()
-        window.sessionStorage.clear()
-    }
+
     useEffect(() => {
         const mediaWidth = window.innerWidth
         if(mediaWidth<576) {

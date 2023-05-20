@@ -15,7 +15,7 @@ const ChatForm = ({addMessage, setThinking}) => {
     const {selectedConversationId, conversationsContext,selectedSystemPromote,setSelectedSystemPromote} = useContext(ChatContext);
     const [_, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
     const {saveDataToDB} = conversationsContext;
-    const [cookies] = useCookies(['id', 'Authorization']);
+    const [cookies, removeCookie] = useCookies(['Authorization']);
 
     const [requestSelected, setRequestSelected] = useState(API_PATH.TEXT)
     const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
@@ -35,11 +35,19 @@ const ChatForm = ({addMessage, setThinking}) => {
 
     const sendStreamMessage = (message) => {
         //console.log("sendStreamMessage:", JSON.stringify(message));
-        const socket = io.connect(process.env.REACT_APP_WS_URL,{withCredentials: true,});
+        const socket = io.connect(process.env.REACT_APP_WS_URL,{withCredentials: false,  query: { token: cookies.Authorization }
+        });
         socket.on('reply', function (data) {
             //console.log('reply' + JSON.stringify(data))
             appendStreamMessage(data)
         });
+        socket.on('logout', function (data) {
+            console.log('reply:loutout')
+            removeCookie('Authorization');
+            //wait 1 second then redirect to login page
+            window.location.href = '/login';
+        });
+
         socket.on('final', function (data) {
             console.log('final' + JSON.stringify(data))
             appendStreamMessage(data)
@@ -49,7 +57,7 @@ const ChatForm = ({addMessage, setThinking}) => {
         });
         const requestBody = {
             msg: message.content,
-            uid: cookies.id,
+            token: cookies.Authorization,
             messageID: ulid(),
             response_type: responseSelected,
             request_type: requestSelected,
@@ -73,6 +81,8 @@ const ChatForm = ({addMessage, setThinking}) => {
         const messageID=ulid();
         formData.append("msg", commandContent);
         formData.append("messageID",messageID)
+        formData.append("token",cookies.Authorization)
+
         if (file) {
             formData.append("files", file);
         }
@@ -85,7 +95,6 @@ const ChatForm = ({addMessage, setThinking}) => {
                 "dataType": "json",
             },
             body: formData, // 使用 formData 作为 body
-            credentials: 'include'
         })
 
         //await processReplyMessage(response, MESSAGE_TYPE.TEXT)

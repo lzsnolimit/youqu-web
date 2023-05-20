@@ -15,7 +15,7 @@ const App = () => {
             path: "/",
             element: <Home />,
             loader: ({params}) => {
-                if(!cookies.Authorization){
+                if(!cookies.Authorization||cookies.Authorization=='undefined'){
                     return redirect("/login")
                 }
                 return null
