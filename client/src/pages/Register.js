@@ -32,8 +32,7 @@ const Register = () => {
             method: 'POST',
             headers: myHeaders,
             body: raw,
-            redirect: 'follow',
-            credentials: 'include'
+            redirect: 'follow'
         };
 
         const response = await fetch(process.env.REACT_APP_BASE_URL + "register", requestOptions)
@@ -48,9 +47,8 @@ const Register = () => {
             const expires = new Date();
             expires.setTime(expires.getTime() + 24 * 60 * 60 * 1000);
             setCookie('Authorization', data.token, { expires })
-
-            //redirect to home page
-            history('/')
+            //redirect to home page with window
+            window.location.href = '/'
         }
     };
 
