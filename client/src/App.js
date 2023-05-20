@@ -4,6 +4,8 @@ import {useCookies} from 'react-cookie';
 import Login from "./pages/Login";
 import Register from './pages/Register'
 import { redirect, createHashRouter, RouterProvider} from 'react-router-dom';
+import ResetPassword from "./pages/ResetPassword";
+import ForgetPassword from "./pages/ForgetPassword";
 
 
 const App = () => {
@@ -26,6 +28,14 @@ const App = () => {
         {
             path: "/register",
             element: <Register />,
+        },
+        {
+            path: "/reset_password",
+            element: <ResetPassword />,
+        },
+        {
+            path: "/forget_password",
+            element: <ForgetPassword />,
         },
     ]);
     return <RouterProvider router={router} />
