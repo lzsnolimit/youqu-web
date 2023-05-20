@@ -1,10 +1,12 @@
 import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
+import {useCookies} from "react-cookie";
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [cookies, setCookie] = useCookies(['Authorization']);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,17 +22,16 @@ const Login = () => {
 
 
 
-        var raw = JSON.stringify({
+        const raw = JSON.stringify({
             "email": email,
             "password": password
         });
 
-        var requestOptions = {
+        const requestOptions = {
             method: 'POST',
             headers: myHeaders,
             body: raw,
-            redirect: 'follow',
-            credentials: 'include'
+            redirect: 'follow'
         };
 
         const response = await fetch(process.env.REACT_APP_BASE_URL + "login", requestOptions)
@@ -40,6 +41,9 @@ const Login = () => {
         }
         else {
             setErrorMessage('')
+            const expires = new Date();
+            expires.setTime(expires.getTime() + 24 * 60 * 60 * 1000);
+            setCookie('Authorization', data.token, { expires })
             //redirect to home page
             window.location.href = '/'
         }

@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
+import {useCookies} from "react-cookie";
 
 const Register = () => {
     const [email, setEmail] = useState('');
@@ -8,6 +9,7 @@ const Register = () => {
     const [phone, setPhone] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const history = useNavigate();
+    const [cookies, setCookie, removeCookie] = useCookies(['Authorization']);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,17 +18,17 @@ const Register = () => {
         if (!registrationValidation()) {
             return;
         }
-        var myHeaders = new Headers();
+        const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        var raw = JSON.stringify({
+        const raw = JSON.stringify({
             "email": email,
             "password": password,
             "username": username,
             "phone": phone
         });
 
-        var requestOptions = {
+        const requestOptions = {
             method: 'POST',
             headers: myHeaders,
             body: raw,
@@ -43,6 +45,10 @@ const Register = () => {
         }
         else {
             setErrorMessage('')
+            const expires = new Date();
+            expires.setTime(expires.getTime() + 24 * 60 * 60 * 1000);
+            setCookie('Authorization', data.token, { expires })
+
             //redirect to home page
             history('/')
         }
