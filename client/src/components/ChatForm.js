@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {Button, Col, Input, Row} from 'antd';
+import {Button, Col, Input, Row, Select} from 'antd';
 import {API_PATH, COMMANDS, MESSAGE_TYPE} from "../common/constant";
 import {useCookies} from "react-cookie";
 import io from "socket.io-client";
@@ -256,21 +256,66 @@ const ChatForm = ({addMessage, setThinking}) => {
             {/*>*/}
             {/*    #菜单*/}
             {/*</button>*/}
-        <form className='form'>
-            <Row className='chat-footer'>
-                <input type="file" id="btn_file" ref={fileInputRef} accept=".pdf" onChange={processFile}
-                    style={{display: 'none'}}/>
+            <form className="form">
+                <Row className="chat-footer">
+                    <input
+                        type="file"
+                        id="btn_file"
+                        ref={fileInputRef}
+                        accept=".pdf"
+                        onChange={processFile}
+                        style={{ display: "none" }}
+                    />
 
-                <Col sm={20} xs={18}>
-                    <Input.TextArea disabled={!selectedConversationId} ref={inputRef} value={inputMessage} onChange={event => {
-                        setInputMessage(event.target.value)
-                    }} showCount={true} autoSize={{minRows: 3, maxRows: 5}} onKeyPress={keyboardSend} className='chatview__textarea-message'/>
-                </Col>
-                <Col sm={4} xs={6} style={{padding:'.5rem'}}>
-                    <Button type="submit" className='chatview__btn-send' disabled={!inputMessage} onClick={send}>Send</Button>
-                </Col>
-            </Row>
-        </form>
+                    <Col sm={2} xs={4} className="my-auto">
+                        <div className="relative inline-flex">
+                            <select
+                                className="w-full h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                                <option>Option 1</option>
+                                <option>Option 2</option>
+                                <option>Option 3</option>
+                            </select>
+
+                        </div>
+                        <div className="relative inline-flex">
+                            <select
+                                className="w-full h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                                <option>Option 1</option>
+                                <option>Option 2</option>
+                                <option>Option 3</option>
+                            </select>
+
+                        </div>
+                    </Col>
+
+                    <Col sm={18} xs={14}>
+                        <Input.TextArea
+                            disabled={!selectedConversationId}
+                            ref={inputRef}
+                            value={inputMessage}
+                            onChange={(event) => {
+                                setInputMessage(event.target.value);
+                            }}
+                            showCount={true}
+                            autoSize={{ minRows: 3, maxRows: 5 }}
+                            onKeyPress={keyboardSend}
+                            className="chatview__textarea-message"
+                        />
+                    </Col>
+                    <Col sm={4} xs={6} style={{ padding: ".5rem" }}>
+                        <Button
+                            type="submit"
+                            className="chatview__btn-send"
+                            disabled={!inputMessage}
+                            onClick={send}
+                        >
+                            Send
+                        </Button>
+                    </Col>
+                </Row>
+            </form>
         </>
     )
 
