@@ -9,6 +9,7 @@ import {conversationsStore} from "../common/storage";
 import {ChatContext} from "../context/chatContext";
 import useLocalStorage, {SelectedConversationIdKey} from "../hooks/useLocalStorage";
 import UserContext from "../context/userContext";
+import axios from "axios";
 
 
 
@@ -89,18 +90,25 @@ const ChatForm = ({addMessage, setThinking}) => {
         if (file) {
             formData.append("files", file);
         }
-        formData.append("uid", cookies.id);
+        formData.append("uid", user.uid);
         formData.append("conversation_id", selectedConversationId);
-        const response = await fetch(POST_URL, {
-            method: 'POST',
-            timeout: 600000,
+        // const response = await fetch(POST_URL, {
+        //     method: 'POST',
+        //     timeout: 600000,
+        //     headers: {
+        //         'Content-Type': 'multipart/form-data'
+        //     },
+        //     //convert formData to json
+        //     //body: JSON.stringify(formData)
+        //     body: formData, // 使用 formData 作为 body
+        // })
+
+
+        const response = await axios.post(POST_URL, formData, {
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'multipart/form-data',
             },
-            //convert formData to json
-            body: JSON.stringify(formData)
-            //body: formData, // 使用 formData 作为 body
-        })
+        });
 
         //await processReplyMessage(response, MESSAGE_TYPE.TEXT)
 
@@ -112,7 +120,7 @@ const ChatForm = ({addMessage, setThinking}) => {
             createReplyMessage(data);
             //console.log(`Request failed with status code ${response.status}`)
         }else {
-            const data = await response.json()
+            const data = await response.data;
             data["messageID"]=ulid()
             createReplyMessage(data)
         }
