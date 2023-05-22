@@ -6,7 +6,8 @@ import {conversationsStore} from "../common/storage";
 import useLocalStorage, {SelectedConversationIdKey} from "../hooks/useLocalStorage";
 import {ChatContextProvider} from "../context/chatContext";
 import {useCookies} from "react-cookie";
-import UserContext from "../context/userContext"; // 更改此行
+import UserContext from "../context/userContext";
+import {json} from "react-router-dom"; // 更改此行
 const Home = () => {
     // const [cookies, setCookie, removeCookie] = useCookies(['Authorization']);
     // useEffect(() => {

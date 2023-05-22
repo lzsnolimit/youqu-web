@@ -20,7 +20,7 @@ const ChatForm = ({addMessage, setThinking}) => {
     const {saveDataToDB} = conversationsContext;
     const [cookies, removeCookie] = useCookies(['Authorization']);
 
-    const [requestSelected, setRequestSelected] = useState(API_PATH.TEXT)
+    const [requestModelSelected, setRequestModelSelected] = useState('gpt-3.5-turbo')
     const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
     const [inputMessage, setInputMessage] = useState("")
     const fileInputRef = useRef(null);
@@ -63,7 +63,7 @@ const ChatForm = ({addMessage, setThinking}) => {
             token: cookies.Authorization,
             messageID: ulid(),
             response_type: responseSelected,
-            request_type: requestSelected,
+            model: requestModelSelected,
             conversation_id: selectedConversationId,
             system_prompt:selectedSystemPromote,
         }
@@ -274,23 +274,25 @@ const ChatForm = ({addMessage, setThinking}) => {
                     <Col sm={2} xs={4} className="my-auto">
                         <div className="relative inline-flex">
                             <select
-                                className="w-full h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                value={requestModelSelected}
+                                onChange={(event) => {
+                                    setRequestModelSelected(event.target.value);
+                                    console.log("requestModelSelected:"+requestModelSelected)
+                                }}
+                                className="w-40 h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                             >
-                                <option>Option 1</option>
-                                <option>Option 2</option>
-                                <option>Option 3</option>
+                                {user&& user.available_models.map((model, index) => (
+                                    <option key={index} value={model}>{model}</option>
+                                ))}
                             </select>
-
                         </div>
                         <div className="relative inline-flex">
                             <select
-                                className="w-full h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-40 h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                             >
-                                <option>Option 1</option>
-                                <option>Option 2</option>
-                                <option>Option 3</option>
+                                <option>Text</option>
+                                <option>Voice</option>
                             </select>
-
                         </div>
                     </Col>
 
