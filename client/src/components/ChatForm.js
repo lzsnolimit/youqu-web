@@ -95,9 +95,11 @@ const ChatForm = ({addMessage, setThinking}) => {
             method: 'POST',
             timeout: 600000,
             headers: {
-                "dataType": "json",
+                "Content-Type": "application/json",
             },
-            body: formData, // 使用 formData 作为 body
+            //convert formData to json
+            body: JSON.stringify(formData)
+            //body: formData, // 使用 formData 作为 body
         })
 
         //await processReplyMessage(response, MESSAGE_TYPE.TEXT)
