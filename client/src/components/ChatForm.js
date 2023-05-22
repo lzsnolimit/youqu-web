@@ -279,16 +279,15 @@ const ChatForm = ({addMessage, setThinking}) => {
                                     setRequestModelSelected(event.target.value);
                                     console.log("requestModelSelected:"+requestModelSelected)
                                 }}
-                                className="w-40 h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-                            >
+                                className="w-full h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"                             >
                                 {user&& user.available_models.map((model, index) => (
                                     <option key={index} value={model}>{model}</option>
                                 ))}
                             </select>
                         </div>
-                        <div className="relative inline-flex">
+                        <div className="relative inline-flex hidden">
                             <select
-                                className="w-40 h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="w-full h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                             >
                                 <option>Text</option>
                                 <option>Voice</option>
@@ -296,7 +295,7 @@ const ChatForm = ({addMessage, setThinking}) => {
                         </div>
                     </Col>
 
-                    <Col sm={18} xs={14}>
+                    <Col sm={18} xs={14}  >
                         <Input.TextArea
                             disabled={!selectedConversationId}
                             ref={inputRef}
