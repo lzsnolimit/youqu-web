@@ -10,7 +10,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        var myHeaders = new Headers();
+        const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
 
