@@ -8,11 +8,14 @@ import {update} from "idb-keyval";
 import {conversationsStore} from "../common/storage";
 import {ChatContext} from "../context/chatContext";
 import useLocalStorage, {SelectedConversationIdKey} from "../hooks/useLocalStorage";
+import UserContext from "../context/userContext";
+
 
 
 const ChatForm = ({addMessage, setThinking}) => {
 
     const {selectedConversationId, conversationsContext,selectedSystemPromote,setSelectedSystemPromote} = useContext(ChatContext);
+    const { user, setUser } = useContext(UserContext);
     const [_, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
     const {saveDataToDB} = conversationsContext;
     const [cookies, removeCookie] = useCookies(['Authorization']);
@@ -266,7 +269,6 @@ const ChatForm = ({addMessage, setThinking}) => {
                         onChange={processFile}
                         style={{ display: "none" }}
                     />
-
                     <Col sm={2} xs={4} className="my-auto">
                         <div className="relative inline-flex">
                             <select
