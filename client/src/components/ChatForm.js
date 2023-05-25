@@ -45,12 +45,12 @@ const ChatForm = ({addMessage, setThinking}) => {
             //console.log('reply' + JSON.stringify(data))
             appendStreamMessage(data)
         });
-        socket.on('logout', function (data) {
-            console.log('reply:loutout')
-            removeCookie('Authorization');
-            //wait 1 second then redirect to login page
-            window.location.href = '/login';
-        });
+        // socket.on('logout', function (data) {
+        //     console.log('reply:loutout')
+        //     removeCookie('Authorization');
+        //     //wait 1 second then redirect to login page
+        //     window.location.href = '/login';
+        // });
 
         socket.on('final', function (data) {
             console.log('final' + JSON.stringify(data))
