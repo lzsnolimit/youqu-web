@@ -11,8 +11,6 @@ import useLocalStorage, {SelectedConversationIdKey} from "../hooks/useLocalStora
 import UserContext from "../context/userContext";
 import axios from "axios";
 
-
-
 const ChatForm = ({addMessage, setThinking}) => {
 
     const {selectedConversationId, conversationsContext,selectedSystemPromote,setSelectedSystemPromote} = useContext(ChatContext);
@@ -36,13 +34,19 @@ const ChatForm = ({addMessage, setThinking}) => {
         inputRef.current.focus()
     }, [])
 
-
     const sendStreamMessage = (message) => {
         //console.log("sendStreamMessage:", JSON.stringify(message));
-        const socket = io.connect(process.env.REACT_APP_WS_URL,{withCredentials: false,  query: { token: cookies.Authorization }
-        });
+        const socket = io(
+            process.env.REACT_APP_WS_URL,
+            {
+                transports: ['websocket'],
+                withCredentials: false,
+                query: { token: cookies.Authorization }
+            }
+        );
+        
         socket.on('reply', function (data) {
-            //console.log('reply' + JSON.stringify(data))
+            // console.log('reply' + JSON.stringify(data))
             appendStreamMessage(data)
         });
         // socket.on('logout', function (data) {
@@ -57,6 +61,7 @@ const ChatForm = ({addMessage, setThinking}) => {
             appendStreamMessage(data)
         });
         socket.on('disconnect', function (data) {
+            console.log(data)
             console.log('disconnect')
         });
         const requestBody = {
@@ -72,10 +77,6 @@ const ChatForm = ({addMessage, setThinking}) => {
         createStreamMessage(requestBody.messageID);
         socket.emit("message", requestBody);
     }
-
-
-
-
 
     const sendCommand = async (commandContent, api_path, file = null) => {
 
