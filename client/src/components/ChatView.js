@@ -44,6 +44,7 @@ const ChatView = () => {
         <div className="chatview">
             <main className='chatview__chatarea'>
                 <ChatArea messages={messages} thinking={thinking}/>
+                {console.log("Start chatview")}
                 <ChatForm
                     addMessage={addMessage}
                     setThinking={setThinking}

@@ -2,7 +2,6 @@ import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Button, Col, Input, Row, Select} from 'antd';
 import {API_PATH, COMMANDS, MESSAGE_TYPE} from "../common/constant";
 import {useCookies} from "react-cookie";
-import io from "socket.io-client";
 import {ulid} from "ulid";
 import {update} from "idb-keyval";
 import {conversationsStore} from "../common/storage";
@@ -10,24 +9,22 @@ import {ChatContext} from "../context/chatContext";
 import useLocalStorage, {SelectedConversationIdKey} from "../hooks/useLocalStorage";
 import UserContext from "../context/userContext";
 import axios from "axios";
+import useSocketIO from "./useSocketIO";
 
 
 
 const ChatForm = ({addMessage, setThinking}) => {
 
-    const {selectedConversationId, conversationsContext,selectedSystemPromote,setSelectedSystemPromote} = useContext(ChatContext);
-    const { user, setUser } = useContext(UserContext);
+    const {selectedConversationId, conversationsContext,selectedSystemPromote,socket,user} = useContext(ChatContext);
     const [_, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
     const {saveDataToDB} = conversationsContext;
-    const [cookies, removeCookie] = useCookies(['Authorization']);
+    const [cookies] = useCookies(['Authorization']);
 
     const [requestModelSelected, setRequestModelSelected] = useState('gpt-3.5-turbo')
     const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
     const [inputMessage, setInputMessage] = useState("")
     const fileInputRef = useRef(null);
     const inputRef = useRef()
-
-    //const [socket, setSocket] = useState(null);
 
     /**
      * Focuses the TextArea input to when the component is first rendered.
@@ -37,31 +34,37 @@ const ChatForm = ({addMessage, setThinking}) => {
     }, [])
 
 
-    const sendStreamMessage = (message) => {
-        //console.log("sendStreamMessage:", JSON.stringify(message));
-        const socket = io.connect(process.env.REACT_APP_WS_URL,{withCredentials: false,  query: { token: cookies.Authorization }
-        });
-        socket.on('reply', function (data) {
-            //console.log('reply' + JSON.stringify(data))
+    useEffect(() => {
+        if (!socket.current) {
+            console.log('socket.current is null')
+            return;
+        }
+        socket.current.on('reply', function (data) {
+            console.log('reply' + JSON.stringify(data))
             appendStreamMessage(data)
         });
-        // socket.on('logout', function (data) {
-        //     console.log('reply:loutout')
-        //     removeCookie('Authorization');
-        //     //wait 1 second then redirect to login page
-        //     window.location.href = '/login';
-        // });
 
-        socket.on('final', function (data) {
+        socket.current.on('final', function (data) {
             console.log('final' + JSON.stringify(data))
             appendStreamMessage(data)
         });
-        socket.on('disconnect', function (data) {
+
+        socket.current.on('disconnect', function (data) {
             console.log('disconnect')
         });
+    }, [socket]);
+
+
+
+    const sendStreamMessage = (message) => {
+        if (!socket.current) {
+            console.log('socket.current is null')
+            return;
+        }
+
+
         const requestBody = {
             msg: message.content,
-            token: cookies.Authorization,
             messageID: ulid(),
             response_type: responseSelected,
             model: requestModelSelected,
@@ -70,7 +73,7 @@ const ChatForm = ({addMessage, setThinking}) => {
         }
         console.log("requestBody："+JSON.stringify(requestBody))
         createStreamMessage(requestBody.messageID);
-        socket.emit("message", requestBody);
+        socket.current.emit("message", requestBody);
     }
 
 
@@ -198,7 +201,7 @@ const ChatForm = ({addMessage, setThinking}) => {
             content: messageContent.content,
         };
         // Call addMessage function to update UI
-        //console.log("createStreamMessage:" + JSON.stringify(message))
+        console.log("createStreamMessage:" + JSON.stringify(message))
         addMessage(message);
     };
 
@@ -274,8 +277,8 @@ const ChatForm = ({addMessage, setThinking}) => {
                     <input
                         type="file"
                         id="btn_file"
-                        ref={fileInputRef}
                         accept=".pdf"
+                        ref={fileInputRef}
                         onChange={processFile}
                         style={{ display: "none" }}
                     />
@@ -302,7 +305,7 @@ const ChatForm = ({addMessage, setThinking}) => {
                             </select>
                         </div>
                     </Col>
-
+                    {console.log("Start chatform")}
                     <Col sm={18} xs={14}  >
                         <Input.TextArea
                             disabled={!selectedConversationId}
@@ -334,4 +337,4 @@ const ChatForm = ({addMessage, setThinking}) => {
 
 };
 
-export default ChatForm;
+export default React.memo(ChatForm);
