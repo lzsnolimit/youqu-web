@@ -29,7 +29,8 @@ const Home = () => {
     const [saveLoading, setSaveLoading] = useState(false);
     const [user, setUser] = useState(null);
     const [cookies, removeCookie] = useCookies(['Authorization']);
-    const socket = useSocketIO(); // 更改此行
+    const socketRef = useSocketIO(); // 更改此行
+
 
 
     useEffect(() => {
@@ -95,7 +96,7 @@ const Home = () => {
                     conversationsContext,
                     selectedSystemPromote,
                     setSelectedSystemPromote,
-                    socket,
+                    socketRef,
                     user,
                     setUser,
                 }}

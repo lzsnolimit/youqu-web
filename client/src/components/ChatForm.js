@@ -15,7 +15,7 @@ import useSocketIO from "./useSocketIO";
 
 const ChatForm = ({addMessage, setThinking}) => {
 
-    const {selectedConversationId, conversationsContext,selectedSystemPromote,socket,user} = useContext(ChatContext);
+    const {selectedConversationId, conversationsContext,selectedSystemPromote,socketRef,user} = useContext(ChatContext);
     const [_, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
     const {saveDataToDB} = conversationsContext;
     const [cookies] = useCookies(['Authorization']);
@@ -35,29 +35,32 @@ const ChatForm = ({addMessage, setThinking}) => {
 
 
     useEffect(() => {
-        if (!socket.current) {
+        if (!socketRef.current) {
             console.log('socket.current is null')
             return;
         }
-        socket.current.on('reply', function (data) {
+
+        console.log('socket.current is not null')
+
+        socketRef.current.on('reply', function (data) {
             console.log('reply' + JSON.stringify(data))
             appendStreamMessage(data)
         });
 
-        socket.current.on('final', function (data) {
+        socketRef.current.on('final', function (data) {
             console.log('final' + JSON.stringify(data))
             appendStreamMessage(data)
         });
 
-        socket.current.on('disconnect', function (data) {
+        socketRef.current.on('disconnect', function (data) {
             console.log('disconnect')
         });
-    }, [socket]);
+    }, [socketRef]);
 
 
 
     const sendStreamMessage = (message) => {
-        if (!socket.current) {
+        if (!socketRef.current) {
             console.log('socket.current is null')
             return;
         }
@@ -73,7 +76,7 @@ const ChatForm = ({addMessage, setThinking}) => {
         }
         console.log("requestBody："+JSON.stringify(requestBody))
         createStreamMessage(requestBody.messageID);
-        socket.current.emit("message", requestBody);
+        socketRef.current.emit("message", requestBody);
     }
 
 
