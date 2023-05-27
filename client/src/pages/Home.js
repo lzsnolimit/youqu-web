@@ -8,7 +8,7 @@ import {ChatContextProvider} from "../context/chatContext";
 import {useCookies} from "react-cookie";
 import UserContext from "../context/userContext";
 import {json} from "react-router-dom";
-import useSocketIO from "../components/useSocketIO";
+import useSocketIO from "../context/useSocketIO";
 import userContext from "../context/userContext"; // 更改此行
 const Home = () => {
     // const [cookies, setCookie, removeCookie] = useCookies(['Authorization']);

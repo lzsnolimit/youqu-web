@@ -52,7 +52,7 @@ const useSocketIO = () => {
                 socketRef.current.emit('heartbeat', 'ping');
                 console.log('ping');
             }
-        }, 1000); // 60000ms => 1 minute
+        }, 30000); // 60000ms => 1 minute
 
         // 清除操作
         return () => {

@@ -7,9 +7,8 @@ import {update} from "idb-keyval";
 import {conversationsStore} from "../common/storage";
 import {ChatContext} from "../context/chatContext";
 import useLocalStorage, {SelectedConversationIdKey} from "../hooks/useLocalStorage";
-import UserContext from "../context/userContext";
 import axios from "axios";
-import useSocketIO from "./useSocketIO";
+import useSocketIO from "../context/useSocketIO";
 
 
 
