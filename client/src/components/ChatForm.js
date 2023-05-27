@@ -319,8 +319,15 @@ const ChatForm = ({addMessage, setThinking}) => {
                             }}
                             showCount={true}
                             autoSize={{ minRows: 3, maxRows: 5 }}
-                            onKeyPress={keyboardSend}
                             className="chatview__textarea-message"
+                            onKeyPress={(event) => {
+                                keyboardSend(event);
+                                if (event.shiftKey && event.key === 'Enter'&&inputMessage) {
+                                    send();
+                                    event.preventDefault(); // Prevent adding a new line
+                                }
+                            }}
+                            placeholder="Shift+Enter 发送"
                         />
                     </Col>
                     <Col sm={4} xs={6} style={{ padding: ".5rem" }}>
