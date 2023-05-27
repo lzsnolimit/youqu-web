@@ -55,7 +55,7 @@ const ChatForm = ({addMessage, setThinking}) => {
         socketRef.current.on('disconnect', function (data) {
             console.log('disconnect')
         });
-    }, [socketRef]);
+    }, [socketRef.current]);
 
 
 
