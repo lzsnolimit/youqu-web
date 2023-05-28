@@ -19,7 +19,7 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
         console.log('socket.current is not null')
 
         socketRef.current.on('reply', function (data) {
-            console.log('reply' + JSON.stringify(data))
+            //console.log('reply' + JSON.stringify(data))
             appendStreamMessage(data,false)
             scrollToBottom()
         });
