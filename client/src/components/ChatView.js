@@ -35,7 +35,8 @@ const ChatView = () => {
 
     const addMessage = async (message) => {
         const id = message?.messageID || undefined;
-        await saveMessagesToDB({...message, id, conversationId: selectedConversationId});
+        await saveMessagesToDB({...message, id, conversationId: message.conversationId?message.conversationId:selectedConversationId,
+    });
     }
 
 

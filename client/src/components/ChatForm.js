@@ -42,7 +42,7 @@ const ChatForm = ({addMessage, setThinking}) => {
         console.log('socket.current is not null')
 
         socketRef.current.on('reply', function (data) {
-            console.log('reply' + JSON.stringify(data))
+            //console.log('reply' + JSON.stringify(data))
             appendStreamMessage(data)
         });
 
@@ -201,6 +201,7 @@ const ChatForm = ({addMessage, setThinking}) => {
             type: MESSAGE_TYPE.TEXT,
             messageID: messageContent.messageID,
             content: messageContent.content,
+            conversationId: messageContent.conversation_id,
         };
         // Call addMessage function to update UI
         console.log("createStreamMessage:" + JSON.stringify(message))
