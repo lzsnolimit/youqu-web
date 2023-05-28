@@ -204,7 +204,7 @@ const ChatForm = ({addMessage, setThinking}) => {
             conversationId: messageContent.conversation_id,
         };
         // Call addMessage function to update UI
-        console.log("createStreamMessage:" + JSON.stringify(message))
+        //console.log("createStreamMessage:" + JSON.stringify(message))
         addMessage(message);
     };
 

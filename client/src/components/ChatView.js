@@ -10,28 +10,11 @@ import useIndexedDB from "../hooks/useIndexedDB";
  * A chat view component that displays a list of messages and a form for sending new messages.
  */
 const ChatView = () => {
-    const {selectedConversationId,systemPromote} = useContext(ChatContext);
+    const {selectedConversationId} = useContext(ChatContext);
     const messagesContext = useIndexedDB(messagesStore, initialMsg);
     const {dbData: messagesDbData , saveDataToDB: saveMessagesToDB} = messagesContext
     // const {dbData: messagesDbData , saveDataToDB: saveMessagesToDB} = messagesContext;
-
-    const [messages, setMessages] = useState([]);
     const [thinking, setThinking] = useState(false)
-
-    useEffect(() => {
-      loadMessages();
-
-    }, [selectedConversationId, messagesDbData])
-
-    const loadMessages = () => {
-        const withCVIdMessages = Array.from(messagesDbData.values())
-          .filter((message) => {
-              const isAIDefaultMessage = message.id === '10001';
-              return isAIDefaultMessage || (message.conversationId && message.conversationId === selectedConversationId)
-          })
-        setMessages(withCVIdMessages);
-    }
-
 
     const addMessage = async (message) => {
         const id = message?.messageID || undefined;
@@ -44,7 +27,10 @@ const ChatView = () => {
     return (
         <div className="chatview">
             <main className='chatview__chatarea'>
-                <ChatArea messages={messages} thinking={thinking}/>
+                <ChatArea
+                    messagesDbData={messagesDbData}
+                    thinking={thinking}
+                />
                 {console.log("Start chatview")}
                 <ChatForm
                     addMessage={addMessage}

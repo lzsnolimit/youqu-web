@@ -1,10 +1,28 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import ChatMessage from './ChatMessage';
 import Thinking from './Thinking';
+import {ChatContext} from "../context/chatContext";
 
-const ChatArea = ({ messages, thinking }) => {
+const ChatArea = ({ messagesDbData, thinking }) => {
 
     const messagesEndRef = useRef()
+
+    const {selectedConversationId} = useContext(ChatContext);
+
+    const [messages, setMessages] = useState([]);
+
+    const loadMessages = () => {
+        const withCVIdMessages = Array.from(messagesDbData.values())
+            .filter((message) => {
+                const isAIDefaultMessage = message.id === '10001';
+                return isAIDefaultMessage || (message.conversationId && message.conversationId === selectedConversationId);
+            });
+        setMessages(withCVIdMessages);
+    };
+
+    useEffect(() => {
+        loadMessages();
+    }, [messagesDbData, selectedConversationId]);
 
     /**
      * Scrolls the chat area to the bottom.
