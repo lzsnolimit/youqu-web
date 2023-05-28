@@ -7,7 +7,9 @@ import useLocalStorage, {SelectedConversationIdKey} from "../hooks/useLocalStora
 import {ChatContextProvider} from "../context/chatContext";
 import {useCookies} from "react-cookie";
 import UserContext from "../context/userContext";
-import {json} from "react-router-dom"; // 更改此行
+import {json} from "react-router-dom";
+import useSocketIO from "../context/useSocketIO";
+import userContext from "../context/userContext"; // 更改此行
 const Home = () => {
     // const [cookies, setCookie, removeCookie] = useCookies(['Authorization']);
     // useEffect(() => {
@@ -27,6 +29,9 @@ const Home = () => {
     const [saveLoading, setSaveLoading] = useState(false);
     const [user, setUser] = useState(null);
     const [cookies, removeCookie] = useCookies(['Authorization']);
+    const socketRef = useSocketIO(); // 更改此行
+
+
 
     useEffect(() => {
         setSelectedConversationId(storeConversationId);
@@ -84,7 +89,6 @@ const Home = () => {
 
 
     return (
-        <UserContext.Provider value={{ user, setUser }}>
             <ChatContextProvider
                 value={{
                     selectedConversationId,
@@ -92,6 +96,9 @@ const Home = () => {
                     conversationsContext,
                     selectedSystemPromote,
                     setSelectedSystemPromote,
+                    socketRef,
+                    user,
+                    setUser,
                 }}
             >
                 {console.log("Start home")}
@@ -101,8 +108,7 @@ const Home = () => {
                 <ChatView/>
             </div>
             </ChatContextProvider>
-        </UserContext.Provider>
     )
 }
 
-export default React.memo(Home)
+export default Home

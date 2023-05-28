@@ -35,7 +35,8 @@ const ChatView = () => {
 
     const addMessage = async (message) => {
         const id = message?.messageID || undefined;
-        await saveMessagesToDB({...message, id, conversationId: selectedConversationId});
+        await saveMessagesToDB({...message, id, conversationId: message.conversationId?message.conversationId:selectedConversationId,
+    });
     }
 
 
@@ -44,6 +45,7 @@ const ChatView = () => {
         <div className="chatview">
             <main className='chatview__chatarea'>
                 <ChatArea messages={messages} thinking={thinking}/>
+                {console.log("Start chatview")}
                 <ChatForm
                     addMessage={addMessage}
                     setThinking={setThinking}
