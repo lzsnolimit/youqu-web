@@ -11,6 +11,7 @@ const ChatArea = ({ messagesDbData, thinking }) => {
 
     const [messages, setMessages] = useState([]);
 
+
     const loadMessages = () => {
         const withCVIdMessages = Array.from(messagesDbData.values())
             .filter((message) => {

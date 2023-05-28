@@ -12,7 +12,7 @@ import useSocketIO from "../context/useSocketIO";
 
 
 
-const ChatForm = ({addMessage, setThinking}) => {
+const ChatForm = ({ saveMessagesToDB, setThinking }) => {
 
     const {selectedConversationId, conversationsContext,selectedSystemPromote,socketRef,user} = useContext(ChatContext);
     const [_, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
@@ -24,6 +24,21 @@ const ChatForm = ({addMessage, setThinking}) => {
     const [inputMessage, setInputMessage] = useState("")
     const fileInputRef = useRef(null);
     const inputRef = useRef()
+
+
+    const [inputText, setInputText] = useState("");
+
+    // ...原有代码
+
+    const addMessage = async (message) => {
+        const id = message?.messageID || undefined;
+        await saveMessagesToDB({
+            ...message,
+            id,
+            conversationId: message.conversationId ? message.conversationId : selectedConversationId,
+        });
+    };
+
 
     /**
      * Focuses the TextArea input to when the component is first rendered.
