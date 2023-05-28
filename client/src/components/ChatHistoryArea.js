@@ -3,9 +3,8 @@ import ChatMessage from './ChatMessage';
 import Thinking from './Thinking';
 import {ChatContext} from "../context/chatContext";
 
-const ChatArea = ({ messagesDbData, thinking }) => {
+const ChatHistoryArea = ({ messagesDbData }) => {
 
-    const messagesEndRef = useRef()
 
     const {selectedConversationId} = useContext(ChatContext);
 
@@ -13,12 +12,12 @@ const ChatArea = ({ messagesDbData, thinking }) => {
 
 
     const loadMessages = () => {
-        const withCVIdMessages = Array.from(messagesDbData.values())
+        const withConveresationIdMessages = Array.from(messagesDbData.values())
             .filter((message) => {
                 const isAIDefaultMessage = message.id === '10001';
                 return isAIDefaultMessage || (message.conversationId && message.conversationId === selectedConversationId);
             });
-        setMessages(withCVIdMessages);
+        setMessages(withConveresationIdMessages);
     };
 
     useEffect(() => {
@@ -28,29 +27,23 @@ const ChatArea = ({ messagesDbData, thinking }) => {
     /**
      * Scrolls the chat area to the bottom.
      */
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({behavior: "smooth"})
-    }
-    /**
-     * Scrolls the chat area to the bottom when the messages array is updated.
-     */
-    useEffect(() => {
-        //console.log("Messages size:"+messages.size)
-        scrollToBottom()
-    }, [messages])
 
+    function safeRender(message) {
+        try {
+            return <ChatMessage key={message.messageID} message={{...message}} />;
+        } catch (error) {
+            console.error('Error rendering message:', error);
+            return null;
+        }
+    }
 
     return (
 
-    <div className='message-box'>
+    <>
         {messages.map((message) => (
-            <ChatMessage key={message.messageID} message={{...message}} />
+            safeRender(message)
         ))}
-
-        {thinking && <Thinking />}
-
-        <span ref={messagesEndRef}></span>
-    </div>)
+    </>)
 };
 
-export default ChatArea;
+export default ChatHistoryArea;

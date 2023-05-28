@@ -8,11 +8,10 @@ import {conversationsStore} from "../common/storage";
 import {ChatContext} from "../context/chatContext";
 import useLocalStorage, {SelectedConversationIdKey} from "../hooks/useLocalStorage";
 import axios from "axios";
-import useSocketIO from "../context/useSocketIO";
 
 
 
-const ChatForm = ({ saveMessagesToDB, setThinking }) => {
+const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking }) => {
 
     const {selectedConversationId, conversationsContext,selectedSystemPromote,socketRef,user} = useContext(ChatContext);
     const [_, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
@@ -25,12 +24,9 @@ const ChatForm = ({ saveMessagesToDB, setThinking }) => {
     const fileInputRef = useRef(null);
     const inputRef = useRef()
 
-
-    const [inputText, setInputText] = useState("");
-
     // ...原有代码
 
-    const addMessage = async (message) => {
+    const addMessageInDB = async (message) => {
         const id = message?.messageID || undefined;
         await saveMessagesToDB({
             ...message,
@@ -48,28 +44,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking }) => {
     }, [])
 
 
-    useEffect(() => {
-        if (!socketRef.current) {
-            console.log('socket.current is null')
-            return;
-        }
 
-        console.log('socket.current is not null')
-
-        socketRef.current.on('reply', function (data) {
-            //console.log('reply' + JSON.stringify(data))
-            appendStreamMessage(data)
-        });
-
-        socketRef.current.on('final', function (data) {
-            console.log('final' + JSON.stringify(data))
-            appendStreamMessage(data)
-        });
-
-        socketRef.current.on('disconnect', function (data) {
-            console.log('disconnect')
-        });
-    }, [socketRef.current]);
 
 
 
@@ -78,7 +53,6 @@ const ChatForm = ({ saveMessagesToDB, setThinking }) => {
             console.log('socket.current is null')
             return;
         }
-
 
         const requestBody = {
             msg: message.content,
@@ -91,6 +65,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking }) => {
         console.log("requestBody："+JSON.stringify(requestBody))
         createStreamMessage(requestBody.messageID);
         socketRef.current.emit("message", requestBody);
+        setThinking(true);
     }
 
 
@@ -202,26 +177,14 @@ const ChatForm = ({ saveMessagesToDB, setThinking }) => {
         };
         // Call addMessage function to update UI
         console.log("Add message:"+JSON.stringify(message))
-        addMessage(message);
+        addMessageInDB(message);
         return message;
     };
 
 
 
 
-    const appendStreamMessage = (messageContent) => {
-        const message = {
-            createdAt: Date.now(),
-            ai: true,
-            type: MESSAGE_TYPE.TEXT,
-            messageID: messageContent.messageID,
-            content: messageContent.content,
-            conversationId: messageContent.conversation_id,
-        };
-        // Call addMessage function to update UI
-        //console.log("createStreamMessage:" + JSON.stringify(message))
-        addMessage(message);
-    };
+
 
     const createStreamMessage = (messageID) => {
         //console.log("messageID:" + messageID)
@@ -230,11 +193,12 @@ const ChatForm = ({ saveMessagesToDB, setThinking }) => {
             ai: true,
             type: MESSAGE_TYPE.TEXT,
             messageID: messageID,
+            conversationId: selectedConversationId,
             content: "Thinking...",
         };
         // Call addMessage function to update UI
         //console.log("createStreamMessage:" + JSON.stringify(message))
-        addMessage(message);
+        setNewReplyMessage(message);
         return message;
     };
 
@@ -250,6 +214,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking }) => {
             ai: false,
             type: MESSAGE_TYPE.TEXT,
             content: messageContent,
+            conversationId: selectedConversationId,
         };
 
         // if (selectedConversationId) {
@@ -257,7 +222,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking }) => {
         // } else {
         //     createConversation()
         // }
-        addMessage(message)
+        addMessageInDB(message)
         return message;
     };
 
@@ -326,7 +291,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking }) => {
                     {console.log("Start chatform")}
                     <Col sm={18} xs={14}  >
                         <Input.TextArea
-                            disabled={!selectedConversationId}
+                            disabled={!selectedConversationId||thinking}
                             ref={inputRef}
                             value={inputMessage}
                             onChange={(event) => {
