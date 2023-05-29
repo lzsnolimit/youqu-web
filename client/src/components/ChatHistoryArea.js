@@ -40,6 +40,7 @@ const ChatHistoryArea = ({ messagesDbData }) => {
     return (
 
     <>
+        {console.log("rendering ChatHistoryArea")}
         {messages.map((message) => (
             safeRender(message)
         ))}
