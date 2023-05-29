@@ -1,56 +1,56 @@
-import React, {useContext, useEffect, useState} from 'react'
-import ChatArea from "./ChatArea";
+import React, {useContext, useEffect, useRef, useState} from 'react'
+import ChatHistoryArea from "./ChatHistoryArea";
 import ChatForm from "./ChatForm";
-import {ChatContext} from "../context/chatContext";
 import {messagesStore} from "../common/storage";
 import {initialMsg} from "../common/constant";
 import useIndexedDB from "../hooks/useIndexedDB";
+import ChatNewMessage from "./ChatNewMessage";
+import {ChatContext} from "../context/chatContext";
+import ErrorBoundary from "../common/ErrorBoundary";
 
 /**
  * A chat view component that displays a list of messages and a form for sending new messages.
  */
 const ChatView = () => {
-    const {selectedConversationId,systemPromote} = useContext(ChatContext);
     const messagesContext = useIndexedDB(messagesStore, initialMsg);
     const {dbData: messagesDbData , saveDataToDB: saveMessagesToDB} = messagesContext
-    // const {dbData: messagesDbData , saveDataToDB: saveMessagesToDB} = messagesContext;
-
-    const [messages, setMessages] = useState([]);
     const [thinking, setThinking] = useState(false)
+    const [newReplyMessage,setNewReplyMessage] = useState(false)
+    const messagesEndRef = useRef()
+    const {selectedConversationId} = useContext(ChatContext);
 
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({behavior: "smooth"})
+    }
+    /**
+     * Scrolls the chat area to the bottom when the messages array is updated.
+     */
     useEffect(() => {
-      loadMessages();
-
-    }, [selectedConversationId, messagesDbData])
-
-    const loadMessages = () => {
-        const withCVIdMessages = Array.from(messagesDbData.values())
-          .filter((message) => {
-              const isAIDefaultMessage = message.id === '10001';
-              return isAIDefaultMessage || (message.conversationId && message.conversationId === selectedConversationId)
-          })
-        setMessages(withCVIdMessages);
-    }
-
-
-    const addMessage = async (message) => {
-        const id = message?.messageID || undefined;
-        await saveMessagesToDB({...message, id, conversationId: message.conversationId?message.conversationId:selectedConversationId,
-    });
-    }
-
+        scrollToBottom()
+    }, [messagesDbData, selectedConversationId,thinking])
 
 
     return (
         <div className="chatview">
+            <ErrorBoundary key={selectedConversationId}>
             <main className='chatview__chatarea'>
-                <ChatArea messages={messages} thinking={thinking}/>
+                <div className='message-box'>
+                <ChatHistoryArea
+                    messagesDbData={messagesDbData}
+                />
+                <ChatNewMessage setThinking={setThinking} scrollToBottom={scrollToBottom} saveMessagesToDB={saveMessagesToDB} newReplyMessage={newReplyMessage} setNewReplyMessage={setNewReplyMessage}
+                />
+                <span ref={messagesEndRef}></span>
+                </div>
                 {console.log("Start chatview")}
                 <ChatForm
-                    addMessage={addMessage}
+                    saveMessagesToDB={saveMessagesToDB}
                     setThinking={setThinking}
+                    thinking={thinking}
+                    setNewReplyMessage={setNewReplyMessage}
                 />
             </main>
+            </ErrorBoundary>
         </div>
     )
 }
