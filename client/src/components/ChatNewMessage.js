@@ -26,6 +26,7 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
         socketRef.current.on('final', function (data) {
             console.log('final' + JSON.stringify(data))
             appendStreamMessage(data,true)
+            setNewReplyMessage(null);
             scrollToBottom()
         });
 
@@ -38,9 +39,8 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
         if (newReplyMessage!= null) {
             setDisplayMessage(newReplyMessage);
             //addMessageInDB(newReplyMessage)
-            setNewReplyMessage(null);
         }
-    }   , [newReplyMessage,setNewReplyMessage]);
+    }   , [newReplyMessage]);
 
     const appendStreamMessage = (messageContent,isFinal=false) => {
         const message = {
@@ -53,7 +53,6 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
         };
         setDisplayMessage(message);
         if (isFinal){
-            setThinking(false);
             addMessageInDB(message).then(r => {
                 setDisplayMessage(null);
             })

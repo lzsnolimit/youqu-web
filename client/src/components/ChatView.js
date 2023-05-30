@@ -14,8 +14,8 @@ import ErrorBoundary from "../common/ErrorBoundary";
 const ChatView = () => {
     const messagesContext = useIndexedDB(messagesStore, initialMsg);
     const {dbData: messagesDbData , saveDataToDB: saveMessagesToDB} = messagesContext
-    const [thinking, setThinking] = useState(false)
-    const [newReplyMessage,setNewReplyMessage] = useState(false)
+    // const [thinking, setThinking] = useState(false)
+    const [newReplyMessage,setNewReplyMessage] = useState(null)
     const messagesEndRef = useRef()
     const {currentConversation} = useContext(ChatContext);
 
@@ -27,7 +27,7 @@ const ChatView = () => {
      */
     useEffect(() => {
         scrollToBottom()
-    }, [messagesDbData, currentConversation,thinking])
+    }, [messagesDbData, currentConversation,newReplyMessage])
 
 
     return (
@@ -38,16 +38,15 @@ const ChatView = () => {
                 <ChatHistoryArea
                     messagesDbData={messagesDbData}
                 />
-                <ChatNewMessage setThinking={setThinking} scrollToBottom={scrollToBottom} saveMessagesToDB={saveMessagesToDB} newReplyMessage={newReplyMessage} setNewReplyMessage={setNewReplyMessage}
+                <ChatNewMessage scrollToBottom={scrollToBottom} saveMessagesToDB={saveMessagesToDB} newReplyMessage={newReplyMessage} setNewReplyMessage={setNewReplyMessage}
                 />
                 <span ref={messagesEndRef}></span>
                 </div>
                 {console.log("Start chatview")}
                 <ChatForm
                     saveMessagesToDB={saveMessagesToDB}
-                    setThinking={setThinking}
-                    thinking={thinking}
                     setNewReplyMessage={setNewReplyMessage}
+                    newReplyMessage={newReplyMessage}
                 />
             </main>
             </ErrorBoundary>

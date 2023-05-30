@@ -11,7 +11,7 @@ import axios from "axios";
 
 
 
-const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking }) => {
+const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
 
     const { conversationsContext,currentConversation,socketRef,user} = useContext(ChatContext);
     const [cookies] = useCookies(['Authorization']);
@@ -56,12 +56,11 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
             response_type: currentConversation?.response_type || 'text',
             model: currentConversation?.model || 'gpt-3.5-turbo',
             conversation_id: currentConversation?.id,
-            system_prompt: currentConversation?.system_prompt,
+            system_prompt: currentConversation?.promote,
         }
         console.log("requestBody："+JSON.stringify(requestBody))
         createStreamMessage(requestBody.messageID);
         socketRef.current.emit("message", requestBody);
-        setThinking(true);
     }
 
 
@@ -71,7 +70,6 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
     const sendCommand = async (commandContent, api_path, file = null) => {
 
         const POST_URL = process.env.REACT_APP_BASE_URL + api_path
-        setThinking(true)
         const formData = new FormData();
         const messageID=ulid();
         formData.append("msg", commandContent);
@@ -115,7 +113,6 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
             data["messageID"]=ulid()
             createReplyMessage(data)
         }
-        setThinking(false)
     }
 
 
@@ -287,7 +284,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
                     {console.log("Start chatform")}
                     <Col sm={18} xs={14}  >
                         <Input.TextArea
-                            disabled={!currentConversation||thinking}
+                            disabled={!currentConversation||newReplyMessage}
                             ref={inputRef}
                             value={inputMessage}
                             onChange={(event) => {
