@@ -17,7 +17,7 @@ const ChatView = () => {
     const [thinking, setThinking] = useState(false)
     const [newReplyMessage,setNewReplyMessage] = useState(false)
     const messagesEndRef = useRef()
-    const {selectedConversationId} = useContext(ChatContext);
+    const {currentConversation} = useContext(ChatContext);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({behavior: "smooth"})
@@ -27,12 +27,12 @@ const ChatView = () => {
      */
     useEffect(() => {
         scrollToBottom()
-    }, [messagesDbData, selectedConversationId,thinking])
+    }, [messagesDbData, currentConversation,thinking])
 
 
     return (
         <div className="chatview">
-            <ErrorBoundary key={selectedConversationId}>
+            <ErrorBoundary key={currentConversation.id}>
             <main className='chatview__chatarea'>
                 <div className='message-box'>
                 <ChatHistoryArea

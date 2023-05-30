@@ -43,13 +43,14 @@ export const PROMOTES = [
         "act": "简洁模式",
         "prompt": "用极简的语句回复。"
     },
-    {
-        "act": "flowchart",
-        "promt":"Generate flowchart using mermaid to meet the content above"
-    },
+
     {
         "act": "担任托福写作考官",
         "prompt": "我希望你假定自己是托福写作考官，根据托福评判标准，按我给你的托福考题和对应答案给我评分，并且按照托福写作评分细则给出打分依据。此外，请给我详细的修改意见并写出满分范文。"
+    },
+    {
+        "act": "flowchart",
+        "prompt":"Generate flowchart using mermaid to meet the content above"
     },
     {
         "act": "全栈工程师",

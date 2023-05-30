@@ -6,20 +6,16 @@ import {ulid} from "ulid";
 import {update} from "idb-keyval";
 import {conversationsStore} from "../common/storage";
 import {ChatContext} from "../context/chatContext";
-import useLocalStorage, {SelectedConversationIdKey} from "../hooks/useLocalStorage";
+import useLocalStorage, {SelectedConversation} from "../hooks/useLocalStorage";
 import axios from "axios";
 
 
 
 const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking }) => {
 
-    const {selectedConversationId, conversationsContext,selectedSystemPromote,socketRef,user} = useContext(ChatContext);
-    const [_, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
-    const {saveDataToDB} = conversationsContext;
+    const { conversationsContext,currentConversation,socketRef,user} = useContext(ChatContext);
     const [cookies] = useCookies(['Authorization']);
-
-    const [requestModelSelected, setRequestModelSelected] = useState('gpt-3.5-turbo')
-    const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
+    // const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
     const [inputMessage, setInputMessage] = useState("")
     const fileInputRef = useRef(null);
     const inputRef = useRef()
@@ -31,7 +27,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
         await saveMessagesToDB({
             ...message,
             id,
-            conversationId: message.conversationId ? message.conversationId : selectedConversationId,
+            conversationId: message.conversationId ? message.conversationId : currentConversation.id,
         });
     };
 
@@ -57,10 +53,10 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
         const requestBody = {
             msg: message.content,
             messageID: ulid(),
-            response_type: responseSelected,
-            model: requestModelSelected,
-            conversation_id: selectedConversationId,
-            system_prompt:selectedSystemPromote,
+            response_type: currentConversation?.response_type || 'text',
+            model: currentConversation?.model || 'gpt-3.5-turbo',
+            conversation_id: currentConversation?.id,
+            system_prompt: currentConversation?.system_prompt,
         }
         console.log("requestBody："+JSON.stringify(requestBody))
         createStreamMessage(requestBody.messageID);
@@ -86,7 +82,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
             formData.append("files", file);
         }
         formData.append("uid", user.uid);
-        formData.append("conversation_id", selectedConversationId);
+        formData.append("conversation_id", currentConversation.id);
         // const response = await fetch(POST_URL, {
         //     method: 'POST',
         //     timeout: 600000,
@@ -193,7 +189,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
             ai: true,
             type: MESSAGE_TYPE.TEXT,
             messageID: messageID,
-            conversationId: selectedConversationId,
+            conversationId: currentConversation.id,
             content: "Thinking...",
         };
         // Call addMessage function to update UI
@@ -214,7 +210,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
             ai: false,
             type: MESSAGE_TYPE.TEXT,
             content: messageContent,
-            conversationId: selectedConversationId,
+            conversationId: currentConversation.id,
         };
 
         // if (selectedConversationId) {
@@ -229,7 +225,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
 
     const onUpdateTitle = (message) => {
         update(
-          selectedConversationId,
+          currentConversation.id,
           (oldValue) => ({...oldValue, title: message.content}),
           conversationsStore
         )
@@ -266,19 +262,19 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
                         style={{ display: "none" }}
                     />
                     <Col sm={2} xs={4} className="my-auto">
-                        <div className="relative inline-flex">
-                            <select
-                                value={requestModelSelected}
-                                onChange={(event) => {
-                                    setRequestModelSelected(event.target.value);
-                                    console.log("requestModelSelected:"+requestModelSelected)
-                                }}
-                                className="w-full h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"                             >
-                                {user&& user.available_models.map((model, index) => (
-                                    <option key={index} value={model}>{model}</option>
-                                ))}
-                            </select>
-                        </div>
+                        {/*<div className="relative inline-flex">*/}
+                        {/*    <select*/}
+                        {/*        value={requestModelSelected}*/}
+                        {/*        onChange={(event) => {*/}
+                        {/*            setRequestModelSelected(event.target.value);*/}
+                        {/*            console.log("requestModelSelected:"+requestModelSelected)*/}
+                        {/*        }}*/}
+                        {/*        className="w-full h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"                             >*/}
+                        {/*        {user&& user.available_models.map((model, index) => (*/}
+                        {/*            <option key={index} value={model}>{model}</option>*/}
+                        {/*        ))}*/}
+                        {/*    </select>*/}
+                        {/*</div>*/}
                         <div className="relative inline-flex hidden">
                             <select
                                 className="w-full h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
@@ -291,7 +287,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
                     {console.log("Start chatform")}
                     <Col sm={18} xs={14}  >
                         <Input.TextArea
-                            disabled={!selectedConversationId||thinking}
+                            disabled={!currentConversation||thinking}
                             ref={inputRef}
                             value={inputMessage}
                             onChange={(event) => {

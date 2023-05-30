@@ -5,8 +5,7 @@ import {ChatContext} from "../context/chatContext";
 import {MESSAGE_TYPE} from "../common/constant";
 
 const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReplyMessage,saveMessagesToDB }) => {
-    const messagesEndRef = useRef()
-    const {selectedConversationId,socketRef} = useContext(ChatContext);
+    const {currentConversation,socketRef} = useContext(ChatContext);
     const [displayMessage, setDisplayMessage] = useState(null);
 
 
@@ -19,7 +18,7 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
         console.log('socket.current is not null')
 
         socketRef.current.on('reply', function (data) {
-            //console.log('reply' + JSON.stringify(data))
+            console.log('reply' + JSON.stringify(data))
             appendStreamMessage(data,false)
             scrollToBottom()
         });
@@ -66,7 +65,7 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
         await saveMessagesToDB({
             ...message,
             id,
-            conversationId: message.conversationId ? message.conversationId : selectedConversationId,
+            conversationId: message.conversationId ? message.conversationId : currentConversation.id,
         });
     };
 
