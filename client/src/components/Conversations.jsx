@@ -17,6 +17,7 @@ const Conversations = () => {
 
   const handleSettingsModalCancel = (e) => {
     e.stopPropagation();
+    setIsNewConversation(false);
     setIsSettingsModalVisible(false);
   }
 
