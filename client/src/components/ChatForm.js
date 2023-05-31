@@ -13,7 +13,7 @@ import axios from "axios";
 
 const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
 
-    const { conversationsContext,currentConversation,socketRef,user} = useContext(ChatContext);
+    const { currentConversation,socketRef,user} = useContext(ChatContext);
     const [cookies] = useCookies(['Authorization']);
     // const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
     const [inputMessage, setInputMessage] = useState("")
@@ -283,8 +283,10 @@ const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
                     </Col>
                     {console.log("Start chatform")}
                     <Col sm={18} xs={14}  >
+                        {console.log("conversation:"+JSON.stringify(currentConversation))}
                         <Input.TextArea
-                            disabled={!currentConversation||newReplyMessage}
+
+                            disabled={currentConversation==null||newReplyMessage}
                             ref={inputRef}
                             value={inputMessage}
                             onChange={(event) => {

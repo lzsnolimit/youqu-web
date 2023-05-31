@@ -32,7 +32,7 @@ const ChatView = () => {
 
     return (
         <div className="chatview">
-            <ErrorBoundary key={currentConversation.id}>
+            <ErrorBoundary>
             <main className='chatview__chatarea'>
                 <div className='message-box'>
                 <ChatHistoryArea

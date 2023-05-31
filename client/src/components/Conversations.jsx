@@ -1,23 +1,23 @@
-import React, {useContext, useState} from 'react';
-import useLocalStorage, {SelectedConversation} from "../hooks/useLocalStorage";
-import {ChatContext} from "../context/chatContext";
-import ConversationIcons from "./ConversationIcons";
-import ConversationSettingModal from "./ConversationSettingModal";
-import {messagesStore} from "../common/storage";
-import {initialMsg} from "../common/constant";
-import useIndexedDB from "../hooks/useIndexedDB";
+import React, { useContext, useState } from 'react';
+import useIndexedDB from '../hooks/useIndexedDB';
+import ConversationIcons from './ConversationIcons';
+import ConversationSettingModal from './ConversationSettingModal';
+import { ChatContext } from '../context/chatContext';
+import { messagesStore } from '../common/storage';
+import { initialMsg } from '../common/constant';
 
 const Conversations = () => {
-  const {currentConversation,setCurrentConversation,conversationsContext} = useContext(ChatContext);
-  const {dbData, saveDataToDB, deleteDataById} = conversationsContext;
-  
+  const { currentConversation, setCurrentConversation, conversationsContext } = useContext(ChatContext);
+  const { dbData, saveDataToDB, deleteDataById } = conversationsContext;
+
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
   const messagesContext = useIndexedDB(messagesStore, initialMsg);
-  const {dbData: messagesDbData , deleteManyByIds} = messagesContext;
+  const { dbData: messagesDbData, deleteManyByIds } = messagesContext;
   const [isNewConversation, setIsNewConversation] = useState(false);
+
   const handleSettingsModalCancel = (e) => {
     e.stopPropagation();
-    setIsSettingsModalVisible(false)
+    setIsSettingsModalVisible(false);
   }
 
   const onChangeConversation = async (conversation) => {
@@ -27,46 +27,52 @@ const Conversations = () => {
   const onDeleteConversation = async () => {
     // clear messages
     const willDeleteMessageIds = Array.from(messagesDbData.values())
-      .filter((message) => message.conversationId === currentConversation.id)
-      .map((message) => message.id)
+        .filter((message) => message.conversationId === currentConversation?.id)
+        .map((message) => message.id)
     await deleteManyByIds(willDeleteMessageIds);
-    await deleteDataById(currentConversation.id);
+    await deleteDataById(currentConversation?.id);
     setCurrentConversation(null);
   }
+
   const createNewConversation = () => {
     console.log("currentConversation: " + JSON.stringify(currentConversation))
     setIsNewConversation(true);
     setIsSettingsModalVisible(true);
   }
 
-  const isSelected = (conversation) => currentConversation.id === conversation.id;
+  const isSelected = (conversation) => currentConversation?.id === conversation.id;
 
-  return(
-    <>
-      <div className="conversations">
-        <div className="conversations__add_chat" onClick={() => createNewConversation()}>+ New chat</div>
-        <ConversationSettingModal setIsSettingsModalVisible={setIsSettingsModalVisible} isSettingsModalVisible={isSettingsModalVisible} handleSettingsModalCancel={handleSettingsModalCancel} isNewConversation={isNewConversation}/>
-        {Array.from(dbData.values()).map((conversation) => (
-          <div
-            key={conversation.id}
-            className="conversations__chat"
-            onClick={() => onChangeConversation(conversation)}
-            style={{background: isSelected(conversation) && '#343541'}}
-          >
-            <div className="conversations__title">
-              {conversation.title.length > 8
-                  ? conversation.title.substr(0, 8) + "..."
-                  : conversation.title}
-            </div>
-            <ConversationIcons
-              conversation={conversation}
-              onDelete={onDeleteConversation}
-              isSelected={isSelected}
-            />
-          </div>
-        ))}
-      </div>
-    </>
+  return (
+      <>
+        <div className="conversations">
+          <div className="conversations__add_chat" onClick={() => createNewConversation()}>+ New chat</div>
+          <ConversationSettingModal setIsSettingsModalVisible={setIsSettingsModalVisible} isSettingsModalVisible={isSettingsModalVisible} handleSettingsModalCancel={handleSettingsModalCancel} isNewConversation={isNewConversation} />
+          {Array.from(dbData.values()).map((conversation) => {
+            const conversationId = conversation?.id;
+            const conversationTitle = conversation?.title || '';
+            return (
+                <div
+                    key={conversationId}
+                    className="conversations__chat"
+                    onClick={() => onChangeConversation(conversation)}
+                    style={{ background: isSelected(conversation) ? '#343541' : 'inherit' }}
+                >
+                  <div className="conversations__title">
+                    {conversationTitle.length > 8 ? conversationTitle.substr(0, 8) + "..." : conversationTitle}
+                  </div>
+                  <ConversationIcons
+                      conversation={conversation}
+                      onDelete={onDeleteConversation}
+                      isSelected={isSelected}
+                      isSettingsModalVisible={isSettingsModalVisible}
+                      setIsSettingsModalVisible={setIsSettingsModalVisible}
+                      setIsNewConversation={setIsNewConversation}
+                  />
+                </div>
+            );
+          })}
+        </div>
+      </>
   )
 }
 

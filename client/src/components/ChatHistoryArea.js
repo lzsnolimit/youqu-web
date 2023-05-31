@@ -12,6 +12,10 @@ const ChatHistoryArea = ({ messagesDbData }) => {
 
 
     const loadMessages = () => {
+        if (!currentConversation) {
+            setMessages([]);
+            return;
+        }
         const withConveresationIdMessages = Array.from(messagesDbData.values())
             .filter((message) => {
                 const isAIDefaultMessage = message.id === '10001';

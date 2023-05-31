@@ -16,8 +16,11 @@ const Home = () => {
     const [storeConversation, setStoreConversation] = useLocalStorage(SelectedConversation, '');
 
     const [user, setUser] = useState(null);
-    const [currentConversation, setCurrentConversation] = useState(JSON.parse(storeConversation) || null);
-
+    const [currentConversation, setCurrentConversation] = useState(
+        storeConversation && storeConversation !== ''
+            ? JSON.parse(storeConversation)
+            : null
+    );
     const [cookies, removeCookie] = useCookies(['Authorization']);
     const socketRef = useSocketIO(); // 更改此行
 
@@ -25,6 +28,8 @@ const Home = () => {
 
     useEffect(() => {
         //convert conversation to string and save in localstorage
+        if (currentConversation == null)
+            return
         setStoreConversation(JSON.stringify(currentConversation));
         console.log("currentConversation changed to: " + JSON.stringify(currentConversation))
     }, [currentConversation])

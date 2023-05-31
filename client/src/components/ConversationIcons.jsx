@@ -1,16 +1,15 @@
 import React, {useState} from 'react';
-import {MdOutlineClear, MdOutlineDelete, MdOutlineDone} from 'react-icons/md'
+import {MdOutlineClear, MdOutlineDelete, MdOutlineDone, MdOutlineSettings} from 'react-icons/md'
 
 const ConfirmType = {
   DELETE: 'delete',
   EDIT: 'edit',
 }
 
-function ConversationIcons({conversation, onDelete, isSelected}) {
+function ConversationIcons({conversation, onDelete, isSelected, isSettingsModalVisible, setIsSettingsModalVisible, setIsNewConversation}) {
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmType, setConfirmType] = useState(ConfirmType.DELETE);
-  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
 
 
   const onDeleteConversation = (e) => {
@@ -67,9 +66,9 @@ function ConversationIcons({conversation, onDelete, isSelected}) {
         </>
       ) : (
           <>
-        {/*<button className="p-1 hover:text-white">*/}
-        {/*  <MdOutlineSettings size={20} onClick={onSettingConversation} />*/}
-        {/*</button>*/}
+        <button className="p-1 hover:text-white">
+          <MdOutlineSettings size={20} onClick={onSettingConversation} />
+        </button>
 
         <button className="p-1 hover:text-white">
           <MdOutlineDelete size={20} onClick={onDeleteConversation} />

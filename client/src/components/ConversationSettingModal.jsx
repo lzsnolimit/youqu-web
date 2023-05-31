@@ -28,7 +28,7 @@ const ConversationSettingModal = ({
     const [promote, setPromote] = useState("");
 
     useEffect(() => {
-        if (isNewConversation) {
+        if (isNewConversation||!currentConversation) {
             setConversationId(ulid());
             setTitle("");
             setPromote("");
