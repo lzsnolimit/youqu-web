@@ -39,7 +39,11 @@ const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
         inputRef.current.focus()
     }, [])
 
+    const [showVoiceInput, setShowVoiceInput] = useState(false);
 
+    const toggleVoiceInput = () => {
+        setShowVoiceInput(!showVoiceInput);
+    };
 
 
 
@@ -235,19 +239,6 @@ const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
 
     return (
 
-        <>
-            {/*<button*/}
-            {/*    type="button"*/}
-            {/*    onClick={() => handleSuggestionClick('#清除记忆')}*/}
-            {/*>*/}
-            {/*    #清除记忆*/}
-            {/*</button>*/}
-            {/*<button*/}
-            {/*    type="button"*/}
-            {/*    onClick={() => handleSuggestionClick('#菜单')}*/}
-            {/*>*/}
-            {/*    #菜单*/}
-            {/*</button>*/}
             <form className="form">
                 <Row className="chat-footer">
                     <input
@@ -259,19 +250,6 @@ const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
                         style={{ display: "none" }}
                     />
                     <Col sm={2} xs={4} className="my-auto">
-                        {/*<div className="relative inline-flex">*/}
-                        {/*    <select*/}
-                        {/*        value={requestModelSelected}*/}
-                        {/*        onChange={(event) => {*/}
-                        {/*            setRequestModelSelected(event.target.value);*/}
-                        {/*            console.log("requestModelSelected:"+requestModelSelected)*/}
-                        {/*        }}*/}
-                        {/*        className="w-full h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"                             >*/}
-                        {/*        {user&& user.available_models.map((model, index) => (*/}
-                        {/*            <option key={index} value={model}>{model}</option>*/}
-                        {/*        ))}*/}
-                        {/*    </select>*/}
-                        {/*</div>*/}
                         <div className="relative inline-flex hidden">
                             <select
                                 className="w-full h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
@@ -282,6 +260,33 @@ const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
                         </div>
                     </Col>
                     {console.log("Start chatform")}
+
+
+                    {/*<Col sm={18} xs={14}>*/}
+                    {/*    {!showVoiceInput ? (*/}
+                    {/*        <div className="flex">*/}
+                    {/*            <button*/}
+                    {/*                className="bg-blue-500 text-white rounded-md px-2 py-1 focus:outline-none"*/}
+                    {/*                onClick={toggleVoiceInput}*/}
+                    {/*            >*/}
+                    {/*                语音*/}
+                    {/*            </button>*/}
+                    {/*            <Input.TextArea*/}
+                    {/*                // 输入框的其他属性*/}
+                    {/*                placeholder="Shift+Enter 发送"*/}
+                    {/*            />*/}
+                    {/*        </div>*/}
+                    {/*    ) : (*/}
+                    {/*        <button*/}
+                    {/*            className="w-full bg-blue-500 text-white rounded-md px-2 py-1 focus:outline-none"*/}
+                    {/*            onClick={toggleVoiceInput}*/}
+                    {/*        >*/}
+                    {/*            按住说话*/}
+                    {/*        </button>*/}
+                    {/*    )}*/}
+                    {/*</Col>*/}
+
+
                     <Col sm={18} xs={14}  >
                         {console.log("conversation:"+JSON.stringify(currentConversation))}
                         <Input.TextArea
@@ -317,7 +322,7 @@ const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
                     </Col>
                 </Row>
             </form>
-        </>
+
     )
 
 };

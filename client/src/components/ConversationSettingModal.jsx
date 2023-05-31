@@ -27,7 +27,7 @@ const ConversationSettingModal = ({
     const [conversationId, setConversationId] = useState(null);
     const [title, setTitle] = useState("");
     const [promote, setPromote] = useState("");
-    const [type, setType] = useState("Reading");
+    const [type, setType] = useState("Chat");
     const [model, setModel] = useState(null);
     const [document, setDocument] = useState(null);
 
@@ -89,8 +89,9 @@ const ConversationSettingModal = ({
                             onChange={(e) => setType(e.target.value)}
                             value={type}
                         >
-                            <Radio value="Reading">Reading</Radio>
-                            <Radio value="Chat">Chat</Radio>
+                            <Radio value="Chat">对话</Radio>
+                            <Radio value="Reading">读书</Radio>
+                            <Radio value="Paint">画画</Radio>
                         </Radio.Group>
                     </div>
                     <div className="mb-4">
