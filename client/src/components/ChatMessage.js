@@ -1,20 +1,14 @@
-import React from 'react'
-import {MdComputer, MdPersonOutline} from 'react-icons/md'
-import MessageText from "./MessageText";
-import MessageVoice from "./MessageVoice";
+import React from 'react';
+import {MdCancel, MdComputer, MdOutlineCancel, MdPersonOutline} from 'react-icons/md';
+import {MESSAGE_TYPE} from "../common/constant";
 import MessagePicture from "./MessagePicture";
-import {MESSAGE_TYPE} from '../common/constant';
+import MessageVoice from "./MessageVoice";
+import MessageText from "./MessageText";
 
-
-/**
- * A chat message component that displays a message with a timestamp and an icon.
- *
- * @param {Object} props - The properties for the component.
- */
 const ChatMessage = (props) => {
-    const {messageID, createdAt, content: content, ai = false, type} = props.message
+    const { messageID, createdAt, content: content, ai = false, type } = props.message;
+    const { showStop = true,showRegenerate = false } = props;
 
-    // 根据消息类型选择合适的组件进行渲染（图片、语音或文本）
     const renderMessageContent = () => {
         switch (type) {
             case MESSAGE_TYPE.INTRODUCTION:
@@ -30,18 +24,26 @@ const ChatMessage = (props) => {
         }
     }
 
+    const handleStopClick = () => {
+        // if (typeof setRendering === 'function') {
+        //     //setRendering(false);
+        // }
+    }
+
     return (
         <div key={messageID} className={`${ai && 'flex-row-reverse'} message`}>
-           {/*{console.log("messageID:"+messageID)}*/}
-           {/*{console.log("content:"+content)}*/}
+
             {renderMessageContent()}
             <div className="message__pic">
-                {
-                    ai ? <MdComputer/> : <MdPersonOutline/>
-                }
+                {ai ? <MdComputer /> : <MdPersonOutline />}
+            </div>
+            <div className="message__pic">
+                {showStop&&ai&& (
+                    <button>stop</button>
+                )}
             </div>
         </div>
     )
 }
 
-export default ChatMessage
+export default ChatMessage;
