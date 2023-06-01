@@ -1,13 +1,15 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {MdCancel, MdComputer, MdOutlineCancel, MdPersonOutline} from 'react-icons/md';
 import {MESSAGE_TYPE} from "../common/constant";
 import MessagePicture from "./MessagePicture";
 import MessageVoice from "./MessageVoice";
 import MessageText from "./MessageText";
+import {ChatContext} from "../context/chatContext";
 
 const ChatMessage = (props) => {
     const { messageID, createdAt, content: content, ai = false, type } = props.message;
-    const { showStop = true,showRegenerate = false } = props;
+    const { showStop = false } = props;
+    const {user,socketRef} = useContext(ChatContext);
 
     const renderMessageContent = () => {
         switch (type) {
@@ -24,6 +26,11 @@ const ChatMessage = (props) => {
         }
     }
 
+    const stop= () => {
+        console.log('stop')
+        socketRef.current.emit('stop', {});
+    }
+
     const handleStopClick = () => {
         // if (typeof setRendering === 'function') {
         //     //setRendering(false);
@@ -35,12 +42,10 @@ const ChatMessage = (props) => {
 
             {renderMessageContent()}
             <div className="message__pic">
-                {ai ? <MdComputer /> : <MdPersonOutline />}
-            </div>
-            <div className="message__pic">
-                {showStop&&ai&& (
-                    <button>stop</button>
-                )}
+                {showStop&&ai?(<button onClick={stop} className="bg-transparent border-none">
+                    <MdComputer />
+                    stop
+                </button>):(< MdPersonOutline/> )}
             </div>
         </div>
     )

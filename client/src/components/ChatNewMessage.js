@@ -7,7 +7,7 @@ import {MESSAGE_TYPE} from "../common/constant";
 const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReplyMessage,saveMessagesToDB }) => {
     const {currentConversation,socketRef} = useContext(ChatContext);
     const [displayMessage, setDisplayMessage] = useState(null);
-
+    // const [showStop, setShowStop] = useState(true);
 
     useEffect(() => {
         if (!socketRef.current) {
@@ -18,7 +18,7 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
         console.log('socket.current is not null')
 
         socketRef.current.on('reply', function (data) {
-            console.log('reply' + JSON.stringify(data))
+            //console.log('reply' + JSON.stringify(data))
             appendStreamMessage(data,false)
             //scrollToBottom()
         });
@@ -73,7 +73,7 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
 
     return (
         <>
-        {displayMessage ?<ChatMessage key={displayMessage.messageID} message={displayMessage} />: null}
+        {displayMessage ?<ChatMessage showStop={true}  key={displayMessage.messageID} message={displayMessage} />: null}
         </>
    )
 };
