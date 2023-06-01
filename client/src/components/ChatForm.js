@@ -288,7 +288,7 @@ const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
 
 
                     <Col sm={18} xs={14}  >
-                        {console.log("conversation:"+JSON.stringify(currentConversation))}
+                        {/*{console.log("conversation:"+JSON.stringify(currentConversation))}*/}
                         <Input.TextArea
 
                             disabled={currentConversation==null||newReplyMessage}
