@@ -46,7 +46,7 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
         const message = {
             createdAt: Date.now(),
             ai: true,
-            type: MESSAGE_TYPE.TEXT,
+            type: messageContent.response_type,
             messageID: messageContent.messageID,
             content: messageContent.content,
             conversationId: messageContent.conversation_id,

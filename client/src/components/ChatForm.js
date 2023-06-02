@@ -146,20 +146,21 @@ const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
     };
 
     const send = () => {
-        switch (inputMessage.trim()) {
-            case COMMANDS.YU_XUE_Xi_PDF:
-                createSendMessage(inputMessage)
-                //console.log("Waiting for file selection...");
-                fileInputRef.current.click();
-                break;
-            case COMMANDS.QING_CHU_JI_YI:
-                sendStreamMessage(createSendMessage(inputMessage))
-                break;
-            default :
-                sendStreamMessage(createSendMessage(inputMessage))
-                break;
-        }
+        // switch (inputMessage.trim()) {
+        //     case COMMANDS.YU_XUE_Xi_PDF:
+        //         createSendMessage(inputMessage)
+        //         //console.log("Waiting for file selection...");
+        //         fileInputRef.current.click();
+        //         break;
+        //     case COMMANDS.QING_CHU_JI_YI:
+        //         sendStreamMessage(createSendMessage(inputMessage))
+        //         break;
+        //     default :
+        //         sendStreamMessage(createSendMessage(inputMessage))
+        //         break;
+        // }
         //console.log("Done")
+        sendStreamMessage(createSendMessage(inputMessage))
         setInputMessage('')
     };
 

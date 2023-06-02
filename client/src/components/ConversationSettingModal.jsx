@@ -27,7 +27,7 @@ const ConversationSettingModal = ({
     const [conversationId, setConversationId] = useState(null);
     const [title, setTitle] = useState("");
     const [promote, setPromote] = useState("");
-    const [type, setType] = useState("Chat");
+    const [response_type, setResponse_type] = useState("text");
     const [model, setModel] = useState(null);
     const [document, setDocument] = useState(null);
 
@@ -57,9 +57,9 @@ const ConversationSettingModal = ({
             id: conversationId,
             title: title,
             promote: promote,
-            type: type,
+            response_type: response_type,
             model: model,
-            document: type === "Reading" ? document : null,
+            document: response_type === "reading" ? document : null,
         };
 
         saveDataToDB(conversation);
@@ -69,9 +69,9 @@ const ConversationSettingModal = ({
                 conversation_id: conversationId,
                 title: title,
                 promote: promote,
-                type: type,
+                response_type: response_type,
                 model: model,
-                document: type === "Reading" ? document : null,
+                document: response_type === "reading" ? document : null,
             });
         }
         setIsSettingsModalVisible(false);
@@ -93,17 +93,21 @@ const ConversationSettingModal = ({
                             className="block text-gray-700 text-sm font-bold mb-2"
                             htmlFor="radio"
                         >
-                            Type
+                            Conversation Type
                         </label>
                         <Radio.Group
-                            onChange={(e) => setType(e.target.value)}
-                            value={type}
+                            onChange={(e) => setResponse_type(e.target.value)}
+                            value={response_type}
                         >
-                            <Radio value="Chat">对话</Radio>
-                            <Radio value="Reading">读书</Radio>
-                            <Radio value="Paint">画画</Radio>
+                            <Radio value="text">文字对话</Radio>
+                            <Radio value="voice">语音对话</Radio>
+                            <Radio value="reading">读书</Radio>
+                            <Radio value="paint">画画</Radio>
                         </Radio.Group>
                     </div>
+
+
+
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                             Model
@@ -120,7 +124,7 @@ const ConversationSettingModal = ({
                             ))}
                         </Select>
                     </div>
-                    {type === "Reading" && (
+                    {response_type === "Reading" && (
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2">
                                 Document
