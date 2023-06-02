@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from "react";
 import {Modal, Select, Radio} from "antd";
-import {PROMOTES} from "../common/constant";
+import {MESSAGE_TYPE, PROMOTES} from "../common/constant";
 import {ulid} from "ulid";
 import useLocalStorage, {SelectedConversation} from "../hooks/useLocalStorage";
 import {ChatContext} from "../context/chatContext";
@@ -40,6 +40,8 @@ const ConversationSettingModal = ({
             setConversationId(currentConversation.id);
             setTitle(currentConversation.title);
             setPromote(currentConversation.promote);
+            setResponse_type(currentConversation.response_type);
+            setModel(currentConversation.model);
         }
 
         console.log("isNewConversation: " + isNewConversation);
@@ -93,16 +95,16 @@ const ConversationSettingModal = ({
                             className="block text-gray-700 text-sm font-bold mb-2"
                             htmlFor="radio"
                         >
-                            Conversation Type
+                            Response Type
                         </label>
                         <Radio.Group
                             onChange={(e) => setResponse_type(e.target.value)}
                             value={response_type}
                         >
-                            <Radio value="text">文字对话</Radio>
-                            <Radio value="voice">语音对话</Radio>
-                            <Radio value="reading">读书</Radio>
-                            <Radio value="paint">画画</Radio>
+                            <Radio value={MESSAGE_TYPE.TEXT}>文字</Radio>
+                            <Radio value={MESSAGE_TYPE.AUDIO}>语音</Radio>
+                            {/*<Radio value="reading">读书</Radio>*/}
+                            <Radio value={MESSAGE_TYPE.PICTURE}>画画</Radio>
                         </Radio.Group>
                     </div>
 

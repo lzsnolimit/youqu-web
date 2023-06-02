@@ -21,7 +21,9 @@ export const MESSAGE_TYPE={
     TEXT:"text",
     PICTURE:"picture",
     AUDIO:"voice",
-    INTRODUCTION:"introduction"
+    // INTRODUCTION:"introduction",
+    //READING:"reading",
+
 }
 
 export const initialMsg = {

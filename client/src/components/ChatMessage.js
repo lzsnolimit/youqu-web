@@ -13,8 +13,8 @@ const ChatMessage = (props) => {
 
     const renderMessageContent = () => {
         switch (type) {
-            case MESSAGE_TYPE.INTRODUCTION:
-                return <MessageText ai={ai} content={content} createdAt={createdAt}/>;
+            // case MESSAGE_TYPE.INTRODUCTION:
+            //     return <MessageText ai={ai} content={content} createdAt={createdAt}/>;
             case MESSAGE_TYPE.PICTURE:
                 return <MessagePicture ai={ai} b64Content={content} createdAt={createdAt}/>;
             //data:image/png;base64,

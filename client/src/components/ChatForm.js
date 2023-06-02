@@ -57,7 +57,7 @@ const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
         const requestBody = {
             msg: message.content,
             messageID: ulid(),
-            response_type: currentConversation?.response_type || 'text',
+            response_type: currentConversation?.response_type || MESSAGE_TYPE.TEXT,
             model: currentConversation?.model || 'gpt-3.5-turbo',
             conversation_id: currentConversation?.id,
             system_prompt: currentConversation?.promote,
