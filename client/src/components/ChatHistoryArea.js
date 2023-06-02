@@ -6,23 +6,27 @@ import {ChatContext} from "../context/chatContext";
 const ChatHistoryArea = ({ messagesDbData }) => {
 
 
-    const {selectedConversationId} = useContext(ChatContext);
+    const {currentConversation} = useContext(ChatContext);
 
     const [messages, setMessages] = useState([]);
 
 
     const loadMessages = () => {
+        if (!currentConversation) {
+            setMessages([]);
+            return;
+        }
         const withConveresationIdMessages = Array.from(messagesDbData.values())
             .filter((message) => {
                 const isAIDefaultMessage = message.id === '10001';
-                return isAIDefaultMessage || (message.conversationId && message.conversationId === selectedConversationId);
+                return isAIDefaultMessage || (message.conversationId && message.conversationId === currentConversation.id);
             });
         setMessages(withConveresationIdMessages);
     };
 
     useEffect(() => {
         loadMessages();
-    }, [messagesDbData, selectedConversationId]);
+    }, [messagesDbData, currentConversation]);
 
     /**
      * Scrolls the chat area to the bottom.

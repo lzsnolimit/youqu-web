@@ -5,10 +5,9 @@ import {ChatContext} from "../context/chatContext";
 import {MESSAGE_TYPE} from "../common/constant";
 
 const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReplyMessage,saveMessagesToDB }) => {
-    const messagesEndRef = useRef()
-    const {selectedConversationId,socketRef} = useContext(ChatContext);
+    const {currentConversation,socketRef} = useContext(ChatContext);
     const [displayMessage, setDisplayMessage] = useState(null);
-
+    // const [showStop, setShowStop] = useState(true);
 
     useEffect(() => {
         if (!socketRef.current) {
@@ -21,12 +20,13 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
         socketRef.current.on('reply', function (data) {
             //console.log('reply' + JSON.stringify(data))
             appendStreamMessage(data,false)
-            scrollToBottom()
+            //scrollToBottom()
         });
 
         socketRef.current.on('final', function (data) {
             console.log('final' + JSON.stringify(data))
             appendStreamMessage(data,true)
+            setNewReplyMessage(null);
             scrollToBottom()
         });
 
@@ -39,9 +39,8 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
         if (newReplyMessage!= null) {
             setDisplayMessage(newReplyMessage);
             //addMessageInDB(newReplyMessage)
-            setNewReplyMessage(null);
         }
-    }   , [newReplyMessage,setNewReplyMessage]);
+    }   , [newReplyMessage]);
 
     const appendStreamMessage = (messageContent,isFinal=false) => {
         const message = {
@@ -54,7 +53,6 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
         };
         setDisplayMessage(message);
         if (isFinal){
-            setThinking(false);
             addMessageInDB(message).then(r => {
                 setDisplayMessage(null);
             })
@@ -66,7 +64,7 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
         await saveMessagesToDB({
             ...message,
             id,
-            conversationId: message.conversationId ? message.conversationId : selectedConversationId,
+            conversationId: message.conversationId ? message.conversationId : currentConversation.id,
         });
     };
 
@@ -75,7 +73,7 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
 
     return (
         <>
-        {displayMessage ?<ChatMessage key={displayMessage.messageID} message={displayMessage} />: null}
+        {displayMessage ?<ChatMessage showStop={true}  key={displayMessage.messageID} message={displayMessage} />: null}
         </>
    )
 };

@@ -3,39 +3,37 @@ import ChatView from '../components/ChatView';
 import React, {useEffect, useState} from 'react'
 import useIndexedDB from "../hooks/useIndexedDB";
 import {conversationsStore} from "../common/storage";
-import useLocalStorage, {SelectedConversationIdKey} from "../hooks/useLocalStorage";
+import useLocalStorage, {SelectedConversation} from "../hooks/useLocalStorage";
 import {ChatContextProvider} from "../context/chatContext";
 import {useCookies} from "react-cookie";
-import UserContext from "../context/userContext";
-import {json} from "react-router-dom";
-import useSocketIO from "../context/useSocketIO";
-import userContext from "../context/userContext"; // 更改此行
+import useSocketIO from "../hooks/useSocketIO";
+
 const Home = () => {
-    // const [cookies, setCookie, removeCookie] = useCookies(['Authorization']);
-    // useEffect(() => {
-    //     if (cookies.Authorization == null) {
-    //         window.location.href = '/login';
-    //     }
-    // }, [cookies]);
 
     const conversationsContext = useIndexedDB(conversationsStore);
-    // const messagesContext = useIndexedDB(messagesStore, initialMsg);
     const {dbData: conversationsDbData , saveDataToDB: saveConversationsToDB} = conversationsContext;
-    const [storeConversationId, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
-    const [selectedConversationId, setSelectedConversationId] = useState('')
-    const [selectedSystemPromote,setSelectedSystemPromote]=useState('')
 
-    const [initLoadConversationsIsDone, setInitLoadConversationsIsDone] = useState(false);
-    const [saveLoading, setSaveLoading] = useState(false);
+    const [storeConversation, setStoreConversation] = useLocalStorage(SelectedConversation, '');
+
     const [user, setUser] = useState(null);
+    const [currentConversation, setCurrentConversation] = useState(
+        storeConversation && storeConversation !== ''
+            ? JSON.parse(storeConversation)
+            : null
+    );
     const [cookies, removeCookie] = useCookies(['Authorization']);
     const socketRef = useSocketIO(); // 更改此行
 
 
 
     useEffect(() => {
-        setSelectedConversationId(storeConversationId);
-    }, [storeConversationId])
+        //convert conversation to string and save in localstorage
+        if (currentConversation == null)
+            return
+        setStoreConversation(JSON.stringify(currentConversation));
+        console.log("currentConversation changed to: " + JSON.stringify(currentConversation))
+    }, [currentConversation])
+
 
 
     useEffect(() => {
@@ -72,33 +70,15 @@ const Home = () => {
     }, []);
 
 
-    /**
-     * The initialization waits for the data in indexedDB to be asynchronously fetched
-     */
-    useEffect(() => {
-        setTimeout(() => {
-            setInitLoadConversationsIsDone(true)
-            Array.from(conversationsDbData.values()).map((conversation) => {
-                if (conversation.id==selectedConversationId){
-                    setSelectedSystemPromote(conversation.promote)
-                }
-            })
-        }, 300)
-    }, [conversationsDbData.size])
-
-
-
     return (
             <ChatContextProvider
                 value={{
-                    selectedConversationId,
-                    setSelectedConversationId,
                     conversationsContext,
-                    selectedSystemPromote,
-                    setSelectedSystemPromote,
                     socketRef,
                     user,
                     setUser,
+                    currentConversation,
+                    setCurrentConversation,
                 }}
             >
                 {console.log("Start home")}

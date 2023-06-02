@@ -6,20 +6,16 @@ import {ulid} from "ulid";
 import {update} from "idb-keyval";
 import {conversationsStore} from "../common/storage";
 import {ChatContext} from "../context/chatContext";
-import useLocalStorage, {SelectedConversationIdKey} from "../hooks/useLocalStorage";
+import useLocalStorage, {SelectedConversation} from "../hooks/useLocalStorage";
 import axios from "axios";
 
 
 
-const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking }) => {
+const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
 
-    const {selectedConversationId, conversationsContext,selectedSystemPromote,socketRef,user} = useContext(ChatContext);
-    const [_, setStoreConversationId] = useLocalStorage(SelectedConversationIdKey, '');
-    const {saveDataToDB} = conversationsContext;
+    const { currentConversation,socketRef,user} = useContext(ChatContext);
     const [cookies] = useCookies(['Authorization']);
-
-    const [requestModelSelected, setRequestModelSelected] = useState('gpt-3.5-turbo')
-    const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
+    // const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
     const [inputMessage, setInputMessage] = useState("")
     const fileInputRef = useRef(null);
     const inputRef = useRef()
@@ -31,7 +27,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
         await saveMessagesToDB({
             ...message,
             id,
-            conversationId: message.conversationId ? message.conversationId : selectedConversationId,
+            conversationId: message.conversationId ? message.conversationId : currentConversation.id,
         });
     };
 
@@ -43,7 +39,11 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
         inputRef.current.focus()
     }, [])
 
+    const [showVoiceInput, setShowVoiceInput] = useState(false);
 
+    const toggleVoiceInput = () => {
+        setShowVoiceInput(!showVoiceInput);
+    };
 
 
 
@@ -57,15 +57,14 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
         const requestBody = {
             msg: message.content,
             messageID: ulid(),
-            response_type: responseSelected,
-            model: requestModelSelected,
-            conversation_id: selectedConversationId,
-            system_prompt:selectedSystemPromote,
+            response_type: currentConversation?.response_type || 'text',
+            model: currentConversation?.model || 'gpt-3.5-turbo',
+            conversation_id: currentConversation?.id,
+            system_prompt: currentConversation?.promote,
         }
         console.log("requestBody："+JSON.stringify(requestBody))
         createStreamMessage(requestBody.messageID);
         socketRef.current.emit("message", requestBody);
-        setThinking(true);
     }
 
 
@@ -75,7 +74,6 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
     const sendCommand = async (commandContent, api_path, file = null) => {
 
         const POST_URL = process.env.REACT_APP_BASE_URL + api_path
-        setThinking(true)
         const formData = new FormData();
         const messageID=ulid();
         formData.append("msg", commandContent);
@@ -86,7 +84,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
             formData.append("files", file);
         }
         formData.append("uid", user.uid);
-        formData.append("conversation_id", selectedConversationId);
+        formData.append("conversation_id", currentConversation.id);
         // const response = await fetch(POST_URL, {
         //     method: 'POST',
         //     timeout: 600000,
@@ -119,7 +117,6 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
             data["messageID"]=ulid()
             createReplyMessage(data)
         }
-        setThinking(false)
     }
 
 
@@ -193,7 +190,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
             ai: true,
             type: MESSAGE_TYPE.TEXT,
             messageID: messageID,
-            conversationId: selectedConversationId,
+            conversationId: currentConversation.id,
             content: "Thinking...",
         };
         // Call addMessage function to update UI
@@ -214,7 +211,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
             ai: false,
             type: MESSAGE_TYPE.TEXT,
             content: messageContent,
-            conversationId: selectedConversationId,
+            conversationId: currentConversation.id,
         };
 
         // if (selectedConversationId) {
@@ -229,7 +226,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
 
     const onUpdateTitle = (message) => {
         update(
-          selectedConversationId,
+          currentConversation.id,
           (oldValue) => ({...oldValue, title: message.content}),
           conversationsStore
         )
@@ -242,19 +239,6 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
 
     return (
 
-        <>
-            {/*<button*/}
-            {/*    type="button"*/}
-            {/*    onClick={() => handleSuggestionClick('#清除记忆')}*/}
-            {/*>*/}
-            {/*    #清除记忆*/}
-            {/*</button>*/}
-            {/*<button*/}
-            {/*    type="button"*/}
-            {/*    onClick={() => handleSuggestionClick('#菜单')}*/}
-            {/*>*/}
-            {/*    #菜单*/}
-            {/*</button>*/}
             <form className="form">
                 <Row className="chat-footer">
                     <input
@@ -266,19 +250,6 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
                         style={{ display: "none" }}
                     />
                     <Col sm={2} xs={4} className="my-auto">
-                        <div className="relative inline-flex">
-                            <select
-                                value={requestModelSelected}
-                                onChange={(event) => {
-                                    setRequestModelSelected(event.target.value);
-                                    console.log("requestModelSelected:"+requestModelSelected)
-                                }}
-                                className="w-full h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"                             >
-                                {user&& user.available_models.map((model, index) => (
-                                    <option key={index} value={model}>{model}</option>
-                                ))}
-                            </select>
-                        </div>
                         <div className="relative inline-flex hidden">
                             <select
                                 className="w-full h-full pl-3 pr-10 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
@@ -289,9 +260,38 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
                         </div>
                     </Col>
                     {console.log("Start chatform")}
+
+
+                    {/*<Col sm={18} xs={14}>*/}
+                    {/*    {!showVoiceInput ? (*/}
+                    {/*        <div className="flex">*/}
+                    {/*            <button*/}
+                    {/*                className="bg-blue-500 text-white rounded-md px-2 py-1 focus:outline-none"*/}
+                    {/*                onClick={toggleVoiceInput}*/}
+                    {/*            >*/}
+                    {/*                语音*/}
+                    {/*            </button>*/}
+                    {/*            <Input.TextArea*/}
+                    {/*                // 输入框的其他属性*/}
+                    {/*                placeholder="Shift+Enter 发送"*/}
+                    {/*            />*/}
+                    {/*        </div>*/}
+                    {/*    ) : (*/}
+                    {/*        <button*/}
+                    {/*            className="w-full bg-blue-500 text-white rounded-md px-2 py-1 focus:outline-none"*/}
+                    {/*            onClick={toggleVoiceInput}*/}
+                    {/*        >*/}
+                    {/*            按住说话*/}
+                    {/*        </button>*/}
+                    {/*    )}*/}
+                    {/*</Col>*/}
+
+
                     <Col sm={18} xs={14}  >
+                        {/*{console.log("conversation:"+JSON.stringify(currentConversation))}*/}
                         <Input.TextArea
-                            disabled={!selectedConversationId||thinking}
+
+                            disabled={currentConversation==null||newReplyMessage}
                             ref={inputRef}
                             value={inputMessage}
                             onChange={(event) => {
@@ -322,7 +322,7 @@ const ChatForm = ({ saveMessagesToDB, setThinking,setNewReplyMessage,thinking })
                     </Col>
                 </Row>
             </form>
-        </>
+
     )
 
 };

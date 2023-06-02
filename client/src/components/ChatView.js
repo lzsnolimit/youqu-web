@@ -14,10 +14,10 @@ import ErrorBoundary from "../common/ErrorBoundary";
 const ChatView = () => {
     const messagesContext = useIndexedDB(messagesStore, initialMsg);
     const {dbData: messagesDbData , saveDataToDB: saveMessagesToDB} = messagesContext
-    const [thinking, setThinking] = useState(false)
-    const [newReplyMessage,setNewReplyMessage] = useState(false)
+    // const [thinking, setThinking] = useState(false)
+    const [newReplyMessage,setNewReplyMessage] = useState(null)
     const messagesEndRef = useRef()
-    const {selectedConversationId} = useContext(ChatContext);
+    const {currentConversation} = useContext(ChatContext);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({behavior: "smooth"})
@@ -27,27 +27,26 @@ const ChatView = () => {
      */
     useEffect(() => {
         scrollToBottom()
-    }, [messagesDbData, selectedConversationId,thinking])
+    }, [messagesDbData, currentConversation,newReplyMessage])
 
 
     return (
         <div className="chatview">
-            <ErrorBoundary key={selectedConversationId}>
+            <ErrorBoundary>
             <main className='chatview__chatarea'>
                 <div className='message-box'>
                 <ChatHistoryArea
                     messagesDbData={messagesDbData}
                 />
-                <ChatNewMessage setThinking={setThinking} scrollToBottom={scrollToBottom} saveMessagesToDB={saveMessagesToDB} newReplyMessage={newReplyMessage} setNewReplyMessage={setNewReplyMessage}
+                <ChatNewMessage scrollToBottom={scrollToBottom} saveMessagesToDB={saveMessagesToDB} newReplyMessage={newReplyMessage} setNewReplyMessage={setNewReplyMessage}
                 />
                 <span ref={messagesEndRef}></span>
                 </div>
                 {console.log("Start chatview")}
                 <ChatForm
                     saveMessagesToDB={saveMessagesToDB}
-                    setThinking={setThinking}
-                    thinking={thinking}
                     setNewReplyMessage={setNewReplyMessage}
+                    newReplyMessage={newReplyMessage}
                 />
             </main>
             </ErrorBoundary>
