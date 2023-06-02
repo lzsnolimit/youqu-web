@@ -23,7 +23,7 @@ const ConversationSettingModal = ({
     } = useContext(ChatContext);
 
     const {saveDataToDB} = conversationsContext;
-
+    const {socketRef} = useContext(ChatContext);
     const [conversationId, setConversationId] = useState(null);
     const [title, setTitle] = useState("");
     const [promote, setPromote] = useState("");
@@ -64,6 +64,16 @@ const ConversationSettingModal = ({
 
         saveDataToDB(conversation);
         setCurrentConversation(conversation);
+        if (!isNewConversation){
+            socketRef.current.emit('update_conversation', {
+                conversation_id: conversationId,
+                title: title,
+                promote: promote,
+                type: type,
+                model: model,
+                document: type === "Reading" ? document : null,
+            });
+        }
         setIsSettingsModalVisible(false);
     };
     const {Option} = Select;
