@@ -20,7 +20,7 @@ const ChatNewMessage = ({ scrollToBottom,setThinking,setNewReplyMessage,newReply
         socketRef.current.on('reply', function (data) {
             //console.log('reply' + JSON.stringify(data))
             appendStreamMessage(data,false)
-            //scrollToBottom()
+            scrollToBottom()
         });
 
         socketRef.current.on('final', function (data) {
