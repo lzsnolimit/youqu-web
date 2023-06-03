@@ -13,7 +13,7 @@ import axios from "axios";
 
 const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
 
-    const { currentConversation,socketRef,user} = useContext(ChatContext);
+    const { currentConversation,socketRef,sendMessage,user} = useContext(ChatContext);
     const [cookies] = useCookies(['Authorization']);
     // const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
     const [inputMessage, setInputMessage] = useState("")
@@ -49,10 +49,6 @@ const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
 
 
     const sendStreamMessage = (message) => {
-        if (!socketRef.current) {
-            console.log('socket.current is null')
-            return;
-        }
 
         const requestBody = {
             msg: message.content,
@@ -64,7 +60,10 @@ const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
         }
         console.log("requestBody："+JSON.stringify(requestBody))
         createStreamMessage(requestBody.messageID);
-        socketRef.current.emit("message", requestBody);
+        //socketRef.current.emit("message", requestBody);
+        sendMessage("message", requestBody)
+
+
     }
 
 

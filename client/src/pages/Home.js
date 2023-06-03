@@ -22,7 +22,7 @@ const Home = () => {
             : null
     );
     const [cookies, removeCookie] = useCookies(['Authorization']);
-    const socketRef = useSocketIO(); // 更改此行
+    const [socketRef,sendMessage] = useSocketIO(); // 更改此行
 
 
 
@@ -75,10 +75,12 @@ const Home = () => {
                 value={{
                     conversationsContext,
                     socketRef,
+                    sendMessage,
                     user,
                     setUser,
                     currentConversation,
                     setCurrentConversation,
+
                 }}
             >
                 {console.log("Start home")}

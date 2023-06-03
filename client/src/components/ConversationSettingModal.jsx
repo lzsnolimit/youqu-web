@@ -19,11 +19,11 @@ const ConversationSettingModal = ({
         currentConversation,
         setCurrentConversation,
         conversationsContext,
-        user
+        user,
+        sendMessage,
     } = useContext(ChatContext);
 
     const {saveDataToDB} = conversationsContext;
-    const {socketRef} = useContext(ChatContext);
     const [conversationId, setConversationId] = useState(null);
     const [title, setTitle] = useState("");
     const [promote, setPromote] = useState("");
@@ -53,7 +53,7 @@ const ConversationSettingModal = ({
         setPromote(PROMOTES[value].prompt);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const conversation = {
             id: conversationId,
@@ -67,7 +67,7 @@ const ConversationSettingModal = ({
         saveDataToDB(conversation);
         setCurrentConversation(conversation);
         if (!isNewConversation){
-            socketRef.current.emit('update_conversation', {
+            sendMessage('update_conversation', {
                 conversation_id: conversationId,
                 title: title,
                 promote: promote,
@@ -102,7 +102,7 @@ const ConversationSettingModal = ({
                             value={response_type}
                         >
                             <Radio value={MESSAGE_TYPE.TEXT}>文字</Radio>
-                            <Radio value={MESSAGE_TYPE.AUDIO}>语音</Radio>
+                            {/*<Radio value={MESSAGE_TYPE.AUDIO}>语音</Radio>*/}
                             {/*<Radio value="reading">读书</Radio>*/}
                             <Radio value={MESSAGE_TYPE.PICTURE}>画画</Radio>
                         </Radio.Group>
