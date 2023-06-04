@@ -104,7 +104,7 @@ const ConversationSettingModal = ({
                             <Radio value={MESSAGE_TYPE.TEXT}>文字</Radio>
                             {/*<Radio value={MESSAGE_TYPE.AUDIO}>语音</Radio>*/}
                             {/*<Radio value="reading">读书</Radio>*/}
-                            <Radio value={MESSAGE_TYPE.PICTURE}>画画</Radio>
+                            <Radio value={MESSAGE_TYPE.PICTURE}>绘画</Radio>
                         </Radio.Group>
                     </div>
 
