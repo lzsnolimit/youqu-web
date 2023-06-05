@@ -74,6 +74,10 @@ const ConversationSettingModal = ({
             setConversationId(ulid());
             setTitle("");
             setPromote("");
+            setResponse_type(MESSAGE_TYPE.TEXT);
+            setDocument(null);
+            setConversation_type(CONVERSATION_TYPE.CHAT);
+
         } else {
             setConversationId(currentConversation.id);
             setTitle(currentConversation.title);
