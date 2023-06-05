@@ -56,8 +56,8 @@ const ConversationSettingModal = ({
     const [conversationId, setConversationId] = useState(null);
     const [title, setTitle] = useState("");
     const [promote, setPromote] = useState("");
-    const [response_type, setResponse_type] = useState("text");
-    const [conversation_type, setConversation_type] = useState("chat");
+    const [response_type, setResponse_type] = useState(MESSAGE_TYPE.TEXT);
+    const [conversation_type, setConversation_type] = useState(CONVERSATION_TYPE.CHAT);
 
     const [model, setModel] = useState(null);
     const [document, setDocument] = useState(null);
@@ -81,6 +81,7 @@ const ConversationSettingModal = ({
             setResponse_type(currentConversation.response_type);
             setModel(currentConversation.model);
             setDocument(currentConversation.document);
+            setConversation_type(currentConversation.conversation_type);
         }
 
         console.log("isNewConversation: " + isNewConversation);
@@ -94,6 +95,15 @@ const ConversationSettingModal = ({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (title === "") {
+            message.error("Please input conversation name");
+            return;
+        }
+        if(conversation_type === CONVERSATION_TYPE.READING && document === null){
+            message.error("Please select a document");
+            return;
+        }
+
         const conversation = {
             id: conversationId,
             title: title,
@@ -101,6 +111,7 @@ const ConversationSettingModal = ({
             response_type: response_type,
             model: model,
             document: response_type === "reading" ? document : null,
+            conversation_type: conversation_type,
         };
 
         saveDataToDB(conversation);
@@ -112,6 +123,7 @@ const ConversationSettingModal = ({
                 promote: promote,
                 response_type: response_type,
                 model: model,
+                conversation_type: conversation_type,
                 document: response_type === "reading" ? document : null,
             });
         }
@@ -130,7 +142,7 @@ const ConversationSettingModal = ({
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <form onSubmit={handleSubmit} className="w-full max-w-sm">
 
-                    <div className="mb-4">
+                    {isNewConversation&&<div className="mb-4">
                         <label
                             className="block text-gray-700 text-sm font-bold mb-2"
                             htmlFor="radio"
@@ -141,10 +153,10 @@ const ConversationSettingModal = ({
                             onChange={(e) => setConversation_type(e.target.value)}
                             value={conversation_type}
                         >
-                            <Radio value={CONVERSATION_TYPE.CHAT}>Chat</Radio>
-                            <Radio value={CONVERSATION_TYPE.READING}>Reading</Radio>
+                            <Radio value={CONVERSATION_TYPE.CHAT}>对话</Radio>
+                            <Radio value={CONVERSATION_TYPE.READING}>读书</Radio>
                         </Radio.Group>
-                    </div>
+                    </div>}
 
 
 
@@ -160,6 +172,7 @@ const ConversationSettingModal = ({
                             value={response_type}
                         >
                             <Radio value={MESSAGE_TYPE.TEXT}>文字</Radio>
+                            <Radio disabled={true} value={MESSAGE_TYPE.AUDIO}>语音</Radio>
                             <Radio disabled={conversation_type===CONVERSATION_TYPE.READING} value={MESSAGE_TYPE.PICTURE}>绘画</Radio>
                         </Radio.Group>
                     </div>
@@ -182,7 +195,7 @@ const ConversationSettingModal = ({
                             ))}
                         </Select>
                     </div>
-                    {CONVERSATION_TYPE === CONVERSATION_TYPE.READING && (
+                    {conversation_type === CONVERSATION_TYPE.READING && (
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2">
                                 Document
@@ -206,7 +219,7 @@ const ConversationSettingModal = ({
 
 
                     )}
-                    <div className="mb-4">
+                    {conversation_type===CONVERSATION_TYPE.CHAT&&response_type==MESSAGE_TYPE.TEXT&&<div className="mb-4">
                         <label
                             className="block text-gray-700 text-sm font-bold mb-2"
                             htmlFor="dropdown"
@@ -229,7 +242,7 @@ const ConversationSettingModal = ({
                                 </Option>
                             ))}
                         </Select>
-                    </div>
+                    </div>}
                     <div className="mb-4">
                         <label
                             className="block text-gray-700 text-sm font-bold mb-2"
@@ -245,7 +258,7 @@ const ConversationSettingModal = ({
                             type="text"
                         />
                     </div>
-                    <div className="mb-6">
+                    {conversation_type===CONVERSATION_TYPE.CHAT&&response_type==MESSAGE_TYPE.TEXT&&<div className="mb-6">
                         <label
                             className="block text-gray-700 text-sm font-bold mb-2"
                             htmlFor="textarea"
@@ -258,7 +271,7 @@ const ConversationSettingModal = ({
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-60"
                             id="textarea"
                         ></textarea>
-                    </div>
+                    </div>}
                     <div className="flex items-center justify-end">
                         <button
                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
