@@ -36,6 +36,7 @@ const ChatView = () => {
             <main className='chatview__chatarea'>
                 <div className='message-box'>
                 <ChatHistoryArea
+                    scrollToBottom={scrollToBottom}
                     messagesDbData={messagesDbData}
                 />
                 <ChatNewMessage scrollToBottom={scrollToBottom} saveMessagesToDB={saveMessagesToDB} newReplyMessage={newReplyMessage} setNewReplyMessage={setNewReplyMessage}

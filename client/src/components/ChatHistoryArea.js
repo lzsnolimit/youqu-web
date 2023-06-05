@@ -3,7 +3,7 @@ import ChatMessage from './ChatMessage';
 import Thinking from './Thinking';
 import {ChatContext} from "../context/chatContext";
 
-const ChatHistoryArea = ({ messagesDbData }) => {
+const ChatHistoryArea = ({ messagesDbData,scrollToBottom }) => {
 
 
     const {currentConversation} = useContext(ChatContext);
@@ -11,7 +11,7 @@ const ChatHistoryArea = ({ messagesDbData }) => {
     const [messages, setMessages] = useState([]);
 
 
-    const loadMessages = () => {
+    const loadMessages = async () => {
         if (!currentConversation) {
             setMessages([]);
             return;
@@ -21,11 +21,12 @@ const ChatHistoryArea = ({ messagesDbData }) => {
                 const isAIDefaultMessage = message.id === '10001';
                 return isAIDefaultMessage || (message.conversationId && message.conversationId === currentConversation.id);
             });
-        setMessages(withConveresationIdMessages);
+        await setMessages(withConveresationIdMessages);
+
     };
 
     useEffect(() => {
-        loadMessages();
+        loadMessages().then(r => scrollToBottom());
     }, [messagesDbData, currentConversation]);
 
     /**

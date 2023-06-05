@@ -9,7 +9,7 @@ import moment from "moment";
  */
 const MessagePicture = ({ai, b64Content, createdAt}) => {
 
-    const pictureBase64 = b64Content.picture_data;
+    const pictureBase64 = b64Content;
 
     const pictureSrc = "data:image/png;base64, " + pictureBase64;
 

@@ -1,9 +1,15 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Modal, Select, Radio} from "antd";
-import {PROMOTES} from "../common/constant";
+import {Modal, Select, Radio,message, Upload, Button} from "antd";
+import {API_PATH, MESSAGE_TYPE, PROMOTES} from "../common/constant";
 import {ulid} from "ulid";
 import useLocalStorage, {SelectedConversation} from "../hooks/useLocalStorage";
 import {ChatContext} from "../context/chatContext";
+import {icons} from "react-icons";
+import {useCookies} from "react-cookie";
+
+
+
+
 
 const ConversationSettingModal = ({
                                       isSettingsModalVisible,
@@ -19,17 +25,47 @@ const ConversationSettingModal = ({
         currentConversation,
         setCurrentConversation,
         conversationsContext,
-        user
+        user,
+        sendMessage,
     } = useContext(ChatContext);
+    const [cookies] = useCookies(['Authorization']);
+
+
+
+    const props = {
+        name: 'file',
+        action: process.env.REACT_APP_BASE_URL + API_PATH.YU_XUE_Xi_PDF,
+        headers: {
+            authorization: cookies.Authorization,
+        },
+        onChange(info) {
+            if (info.file.status !== 'uploading') {
+                console.log(info.file, info.fileList);
+            }
+            if (info.file.status === 'done') {
+                message.success(`${info.file.name} file uploaded successfully,we will send you an email once file training is done`);
+            } else if (info.file.status === 'error') {
+                message.error(`${info.file.name} file upload failed.`);
+            }
+            setDocument(null)
+        },
+    };
+
 
     const {saveDataToDB} = conversationsContext;
-    const {socketRef} = useContext(ChatContext);
     const [conversationId, setConversationId] = useState(null);
     const [title, setTitle] = useState("");
     const [promote, setPromote] = useState("");
-    const [type, setType] = useState("Chat");
+    const [response_type, setResponse_type] = useState("text");
     const [model, setModel] = useState(null);
     const [document, setDocument] = useState(null);
+
+    // useEffect(()=>{
+    //     if (document!=null&&document==="upload"){
+    //         //window.open("/#/upload", "_blank");
+    //         setDocument(null)
+    //     }
+    // },[document])
 
     useEffect(() => {
         if (isNewConversation||!currentConversation) {
@@ -40,6 +76,8 @@ const ConversationSettingModal = ({
             setConversationId(currentConversation.id);
             setTitle(currentConversation.title);
             setPromote(currentConversation.promote);
+            setResponse_type(currentConversation.response_type);
+            setModel(currentConversation.model);
         }
 
         console.log("isNewConversation: " + isNewConversation);
@@ -51,27 +89,27 @@ const ConversationSettingModal = ({
         setPromote(PROMOTES[value].prompt);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const conversation = {
             id: conversationId,
             title: title,
             promote: promote,
-            type: type,
+            response_type: response_type,
             model: model,
-            document: type === "Reading" ? document : null,
+            document: response_type === "reading" ? document : null,
         };
 
         saveDataToDB(conversation);
         setCurrentConversation(conversation);
         if (!isNewConversation){
-            socketRef.current.emit('update_conversation', {
+            sendMessage('update_conversation', {
                 conversation_id: conversationId,
                 title: title,
                 promote: promote,
-                type: type,
+                response_type: response_type,
                 model: model,
-                document: type === "Reading" ? document : null,
+                document: response_type === "reading" ? document : null,
             });
         }
         setIsSettingsModalVisible(false);
@@ -93,17 +131,21 @@ const ConversationSettingModal = ({
                             className="block text-gray-700 text-sm font-bold mb-2"
                             htmlFor="radio"
                         >
-                            Type
+                            Response Type
                         </label>
                         <Radio.Group
-                            onChange={(e) => setType(e.target.value)}
-                            value={type}
+                            onChange={(e) => setResponse_type(e.target.value)}
+                            value={response_type}
                         >
-                            <Radio value="Chat">对话</Radio>
-                            <Radio value="Reading">读书</Radio>
-                            <Radio value="Paint">画画</Radio>
+                            <Radio value={MESSAGE_TYPE.TEXT}>文字</Radio>
+                            {/*<Radio value={MESSAGE_TYPE.AUDIO}>语音</Radio>*/}
+                            <Radio value="reading">读书</Radio>
+                            <Radio value={MESSAGE_TYPE.PICTURE}>绘画</Radio>
                         </Radio.Group>
                     </div>
+
+
+
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                             Model
@@ -120,7 +162,7 @@ const ConversationSettingModal = ({
                             ))}
                         </Select>
                     </div>
-                    {type === "Reading" && (
+                    {response_type === "reading" && (
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2">
                                 Document
@@ -136,7 +178,13 @@ const ConversationSettingModal = ({
                                     </Option>
                                 ))}
                             </Select>
+                            { !document&&<Upload {...props}>
+                                <Button >Click to Upload</Button>
+                            </Upload>}
                         </div>
+
+
+
                     )}
                     <div className="mb-4">
                         <label

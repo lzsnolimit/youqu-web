@@ -12,7 +12,7 @@ const MessageVoice = ({ai, audioContent, createdAt}) => {
     //const audioDataURL = `data:audio/*;base64,${btoa(audioContent)}`;
 
     //const result=audioContent.result;
-    const audioBase64 = audioContent.audio_data;
+    const audioBase64 = audioContent;
 
 
     const audioSrcContent = `data:audio/wav;base64,${audioBase64}`;

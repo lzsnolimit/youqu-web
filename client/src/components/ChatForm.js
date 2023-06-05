@@ -13,7 +13,7 @@ import axios from "axios";
 
 const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
 
-    const { currentConversation,socketRef,user} = useContext(ChatContext);
+    const { currentConversation,sendMessage,user} = useContext(ChatContext);
     const [cookies] = useCookies(['Authorization']);
     // const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
     const [inputMessage, setInputMessage] = useState("")
@@ -49,22 +49,21 @@ const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
 
 
     const sendStreamMessage = (message) => {
-        if (!socketRef.current) {
-            console.log('socket.current is null')
-            return;
-        }
 
         const requestBody = {
             msg: message.content,
             messageID: ulid(),
-            response_type: currentConversation?.response_type || 'text',
+            response_type: currentConversation?.response_type || MESSAGE_TYPE.TEXT,
             model: currentConversation?.model || 'gpt-3.5-turbo',
             conversation_id: currentConversation?.id,
             system_prompt: currentConversation?.promote,
         }
         console.log("requestBody："+JSON.stringify(requestBody))
         createStreamMessage(requestBody.messageID);
-        socketRef.current.emit("message", requestBody);
+        //socketRef.current.emit("message", requestBody);
+        sendMessage("message", requestBody)
+
+
     }
 
 
@@ -146,20 +145,21 @@ const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
     };
 
     const send = () => {
-        switch (inputMessage.trim()) {
-            case COMMANDS.YU_XUE_Xi_PDF:
-                createSendMessage(inputMessage)
-                //console.log("Waiting for file selection...");
-                fileInputRef.current.click();
-                break;
-            case COMMANDS.QING_CHU_JI_YI:
-                sendStreamMessage(createSendMessage(inputMessage))
-                break;
-            default :
-                sendStreamMessage(createSendMessage(inputMessage))
-                break;
-        }
+        // switch (inputMessage.trim()) {
+        //     case COMMANDS.YU_XUE_Xi_PDF:
+        //         createSendMessage(inputMessage)
+        //         //console.log("Waiting for file selection...");
+        //         fileInputRef.current.click();
+        //         break;
+        //     case COMMANDS.QING_CHU_JI_YI:
+        //         sendStreamMessage(createSendMessage(inputMessage))
+        //         break;
+        //     default :
+        //         sendStreamMessage(createSendMessage(inputMessage))
+        //         break;
+        // }
         //console.log("Done")
+        sendStreamMessage(createSendMessage(inputMessage))
         setInputMessage('')
     };
 
