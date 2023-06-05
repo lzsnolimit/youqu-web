@@ -110,7 +110,7 @@ const ConversationSettingModal = ({
             promote: promote,
             response_type: response_type,
             model: model,
-            document: response_type === "reading" ? document : null,
+            document: document,
             conversation_type: conversation_type,
         };
 

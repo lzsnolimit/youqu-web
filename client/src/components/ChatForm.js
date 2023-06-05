@@ -21,7 +21,6 @@ const ChatForm = ({ saveMessagesToDB, setNewReplyMessage }) => {
         let altKey = event.altKey;
         if (altKey && keyCode === 13) {
             send();
-            setInputMessage("");
         }
     };
 
@@ -61,6 +60,9 @@ const ChatForm = ({ saveMessagesToDB, setNewReplyMessage }) => {
             conversation_type: currentConversation?.conversation_type,
             document: currentConversation?.document,
         };
+
+
+        console.log("requestBody", requestBody);
         setNewReplyMessage({
             createdAt: Date.now(),
             ai: true,
