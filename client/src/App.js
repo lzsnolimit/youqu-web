@@ -37,6 +37,10 @@ const App = () => {
             path: "/forget_password",
             element: <ForgetPassword />,
         },
+        // {
+        //     path: "/upload",
+        //     element: <FileUploader />,
+        // },
     ]);
     return <RouterProvider router={router} />
 }

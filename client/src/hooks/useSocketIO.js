@@ -5,7 +5,7 @@ import {useCookies} from "react-cookie";
 const useSocketIO = () => {
     const socketRef = useRef();
     const [cookies, removeCookie] = useCookies(['Authorization']);
-    const sendMessage = (messageType,requestBody) => {
+    const sendMessage = async (messageType,requestBody) => {
         console.log('sendMessage')
         //if null, connect it
         if (!socketRef.current||!socketRef.current.connected) {

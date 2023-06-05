@@ -1,9 +1,15 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Modal, Select, Radio} from "antd";
-import {MESSAGE_TYPE, PROMOTES} from "../common/constant";
+import {Modal, Select, Radio,message, Upload, Button} from "antd";
+import {API_PATH, MESSAGE_TYPE, PROMOTES} from "../common/constant";
 import {ulid} from "ulid";
 import useLocalStorage, {SelectedConversation} from "../hooks/useLocalStorage";
 import {ChatContext} from "../context/chatContext";
+import {icons} from "react-icons";
+import {useCookies} from "react-cookie";
+
+
+
+
 
 const ConversationSettingModal = ({
                                       isSettingsModalVisible,
@@ -22,6 +28,29 @@ const ConversationSettingModal = ({
         user,
         sendMessage,
     } = useContext(ChatContext);
+    const [cookies] = useCookies(['Authorization']);
+
+
+
+    const props = {
+        name: 'file',
+        action: process.env.REACT_APP_BASE_URL + API_PATH.YU_XUE_Xi_PDF,
+        headers: {
+            authorization: cookies.Authorization,
+        },
+        onChange(info) {
+            if (info.file.status !== 'uploading') {
+                console.log(info.file, info.fileList);
+            }
+            if (info.file.status === 'done') {
+                message.success(`${info.file.name} file uploaded successfully,we will send you an email once file training is done`);
+            } else if (info.file.status === 'error') {
+                message.error(`${info.file.name} file upload failed.`);
+            }
+            setDocument(null)
+        },
+    };
+
 
     const {saveDataToDB} = conversationsContext;
     const [conversationId, setConversationId] = useState(null);
@@ -30,6 +59,13 @@ const ConversationSettingModal = ({
     const [response_type, setResponse_type] = useState("text");
     const [model, setModel] = useState(null);
     const [document, setDocument] = useState(null);
+
+    // useEffect(()=>{
+    //     if (document!=null&&document==="upload"){
+    //         //window.open("/#/upload", "_blank");
+    //         setDocument(null)
+    //     }
+    // },[document])
 
     useEffect(() => {
         if (isNewConversation||!currentConversation) {
@@ -103,7 +139,7 @@ const ConversationSettingModal = ({
                         >
                             <Radio value={MESSAGE_TYPE.TEXT}>文字</Radio>
                             {/*<Radio value={MESSAGE_TYPE.AUDIO}>语音</Radio>*/}
-                            {/*<Radio value="reading">读书</Radio>*/}
+                            <Radio value="reading">读书</Radio>
                             <Radio value={MESSAGE_TYPE.PICTURE}>绘画</Radio>
                         </Radio.Group>
                     </div>
@@ -126,7 +162,7 @@ const ConversationSettingModal = ({
                             ))}
                         </Select>
                     </div>
-                    {response_type === "Reading" && (
+                    {response_type === "reading" && (
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2">
                                 Document
@@ -142,7 +178,13 @@ const ConversationSettingModal = ({
                                     </Option>
                                 ))}
                             </Select>
+                            { !document&&<Upload {...props}>
+                                <Button >Click to Upload</Button>
+                            </Upload>}
                         </div>
+
+
+
                     )}
                     <div className="mb-4">
                         <label
