@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from "react";
 import {Modal, Select, Radio,message, Upload, Button} from "antd";
-import {API_PATH, MESSAGE_TYPE, PROMOTES} from "../common/constant";
+import {API_PATH, CONVERSATION_TYPE, MESSAGE_TYPE, PROMOTES} from "../common/constant";
 import {ulid} from "ulid";
 import useLocalStorage, {SelectedConversation} from "../hooks/useLocalStorage";
 import {ChatContext} from "../context/chatContext";
@@ -57,6 +57,8 @@ const ConversationSettingModal = ({
     const [title, setTitle] = useState("");
     const [promote, setPromote] = useState("");
     const [response_type, setResponse_type] = useState("text");
+    const [conversation_type, setConversation_type] = useState("chat");
+
     const [model, setModel] = useState(null);
     const [document, setDocument] = useState(null);
 
@@ -78,6 +80,7 @@ const ConversationSettingModal = ({
             setPromote(currentConversation.promote);
             setResponse_type(currentConversation.response_type);
             setModel(currentConversation.model);
+            setDocument(currentConversation.document);
         }
 
         console.log("isNewConversation: " + isNewConversation);
@@ -126,6 +129,25 @@ const ConversationSettingModal = ({
         >
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <form onSubmit={handleSubmit} className="w-full max-w-sm">
+
+                    <div className="mb-4">
+                        <label
+                            className="block text-gray-700 text-sm font-bold mb-2"
+                            htmlFor="radio"
+                        >
+                            Conversation Type
+                        </label>
+                        <Radio.Group
+                            onChange={(e) => setConversation_type(e.target.value)}
+                            value={conversation_type}
+                        >
+                            <Radio value={CONVERSATION_TYPE.CHAT}>Chat</Radio>
+                            <Radio value={CONVERSATION_TYPE.READING}>Reading</Radio>
+                        </Radio.Group>
+                    </div>
+
+
+
                     <div className="mb-4">
                         <label
                             className="block text-gray-700 text-sm font-bold mb-2"
@@ -138,9 +160,7 @@ const ConversationSettingModal = ({
                             value={response_type}
                         >
                             <Radio value={MESSAGE_TYPE.TEXT}>文字</Radio>
-                            {/*<Radio value={MESSAGE_TYPE.AUDIO}>语音</Radio>*/}
-                            <Radio value="reading">读书</Radio>
-                            <Radio value={MESSAGE_TYPE.PICTURE}>绘画</Radio>
+                            <Radio disabled={conversation_type===CONVERSATION_TYPE.READING} value={MESSAGE_TYPE.PICTURE}>绘画</Radio>
                         </Radio.Group>
                     </div>
 
@@ -162,7 +182,7 @@ const ConversationSettingModal = ({
                             ))}
                         </Select>
                     </div>
-                    {response_type === "reading" && (
+                    {CONVERSATION_TYPE === CONVERSATION_TYPE.READING && (
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2">
                                 Document

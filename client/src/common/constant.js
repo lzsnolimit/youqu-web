@@ -21,10 +21,14 @@ export const MESSAGE_TYPE={
     TEXT:"text",
     PICTURE:"picture",
     AUDIO:"voice",
-    // INTRODUCTION:"introduction",
-    //READING:"reading",
-
 }
+
+
+export const CONVERSATION_TYPE={
+    CHAT:"chat",
+    READING:"reading",
+}
+
 
 export const initialMsg = {
     id: '10001',

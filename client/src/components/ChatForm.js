@@ -13,7 +13,7 @@ import axios from "axios";
 
 const ChatForm = ({ saveMessagesToDB,setNewReplyMessage,newReplyMessage }) => {
 
-    const { currentConversation,sendMessage,user} = useContext(ChatContext);
+    const { currentConversation,socketRef,sendMessage,user} = useContext(ChatContext);
     const [cookies] = useCookies(['Authorization']);
     // const [responseSelected, setResponseSelected] = useState(MESSAGE_TYPE.TEXT)
     const [inputMessage, setInputMessage] = useState("")
