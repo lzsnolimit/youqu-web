@@ -215,9 +215,9 @@ const ConversationSettingModal = ({
                                     </Option>
                                 ))}
                             </Select>
-                            { !document&&<Upload {...props}>
+                            <Upload documents to ready {...props}>
                                 <Button >Click to Upload</Button>
-                            </Upload>}
+                            </Upload>
                         </div>
 
 
