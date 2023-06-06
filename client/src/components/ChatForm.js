@@ -62,7 +62,7 @@ const ChatForm = ({ saveMessagesToDB, setNewReplyMessage }) => {
         };
 
 
-        console.log("requestBody", requestBody);
+        console.log("requestBody", JSON.stringify(requestBody));
         setNewReplyMessage({
             createdAt: Date.now(),
             ai: true,
