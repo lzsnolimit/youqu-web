@@ -13,7 +13,7 @@ const Home = () => {
     const conversationsContext = useIndexedDB(conversationsStore);
     const {dbData: conversationsDbData , saveDataToDB: saveConversationsToDB} = conversationsContext;
 
-    const [storeConversation, setStoreConversation] = useLocalStorage(SelectedConversation, '');
+    const [storeConversation, setStoreConversation,removeItem] = useLocalStorage(SelectedConversation, '');
 
     const [user, setUser] = useState(null);
     const [currentConversation, setCurrentConversation] = useState(
@@ -28,10 +28,12 @@ const Home = () => {
 
     useEffect(() => {
         //convert conversation to string and save in localstorage
+        console.log("currentConversation changed to: " + JSON.stringify(currentConversation))
         if (currentConversation == null)
+            console.log("currentConversation is null")
+            removeItem();
             return
         setStoreConversation(JSON.stringify(currentConversation));
-        console.log("currentConversation changed to: " + JSON.stringify(currentConversation))
     }, [currentConversation])
 
 
