@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from "react";
 import {Modal, Select, Radio,message, Upload, Button} from "antd";
-import {API_PATH, MESSAGE_TYPE, PROMOTES} from "../common/constant";
+import {API_PATH, CONVERSATION_TYPE, MESSAGE_TYPE, PROMOTES} from "../common/constant";
 import {ulid} from "ulid";
 import useLocalStorage, {SelectedConversation} from "../hooks/useLocalStorage";
 import {ChatContext} from "../context/chatContext";
@@ -56,7 +56,9 @@ const ConversationSettingModal = ({
     const [conversationId, setConversationId] = useState(null);
     const [title, setTitle] = useState("");
     const [promote, setPromote] = useState("");
-    const [response_type, setResponse_type] = useState("text");
+    const [response_type, setResponse_type] = useState(MESSAGE_TYPE.TEXT);
+    const [conversation_type, setConversation_type] = useState(CONVERSATION_TYPE.CHAT);
+
     const [model, setModel] = useState(null);
     const [document, setDocument] = useState(null);
 
@@ -72,12 +74,18 @@ const ConversationSettingModal = ({
             setConversationId(ulid());
             setTitle("");
             setPromote("");
+            setResponse_type(MESSAGE_TYPE.TEXT);
+            setDocument(null);
+            setConversation_type(CONVERSATION_TYPE.CHAT);
+
         } else {
             setConversationId(currentConversation.id);
             setTitle(currentConversation.title);
             setPromote(currentConversation.promote);
             setResponse_type(currentConversation.response_type);
             setModel(currentConversation.model);
+            setDocument(currentConversation.document);
+            setConversation_type(currentConversation.conversation_type);
         }
 
         console.log("isNewConversation: " + isNewConversation);
@@ -91,13 +99,23 @@ const ConversationSettingModal = ({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (title === "") {
+            message.error("Please input conversation name");
+            return;
+        }
+        if(conversation_type === CONVERSATION_TYPE.READING && document === null){
+            message.error("Please select a document");
+            return;
+        }
+
         const conversation = {
             id: conversationId,
             title: title,
             promote: promote,
             response_type: response_type,
             model: model,
-            document: response_type === "reading" ? document : null,
+            document: document,
+            conversation_type: conversation_type,
         };
 
         saveDataToDB(conversation);
@@ -109,6 +127,7 @@ const ConversationSettingModal = ({
                 promote: promote,
                 response_type: response_type,
                 model: model,
+                conversation_type: conversation_type,
                 document: response_type === "reading" ? document : null,
             });
         }
@@ -126,6 +145,25 @@ const ConversationSettingModal = ({
         >
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <form onSubmit={handleSubmit} className="w-full max-w-sm">
+
+                    {isNewConversation&&<div className="mb-4">
+                        <label
+                            className="block text-gray-700 text-sm font-bold mb-2"
+                            htmlFor="radio"
+                        >
+                            Conversation Type
+                        </label>
+                        <Radio.Group
+                            onChange={(e) => setConversation_type(e.target.value)}
+                            value={conversation_type}
+                        >
+                            <Radio value={CONVERSATION_TYPE.CHAT}>对话</Radio>
+                            <Radio value={CONVERSATION_TYPE.READING}>读书</Radio>
+                        </Radio.Group>
+                    </div>}
+
+
+
                     <div className="mb-4">
                         <label
                             className="block text-gray-700 text-sm font-bold mb-2"
@@ -138,9 +176,8 @@ const ConversationSettingModal = ({
                             value={response_type}
                         >
                             <Radio value={MESSAGE_TYPE.TEXT}>文字</Radio>
-                            {/*<Radio value={MESSAGE_TYPE.AUDIO}>语音</Radio>*/}
-                            <Radio value="reading">读书</Radio>
-                            <Radio value={MESSAGE_TYPE.PICTURE}>绘画</Radio>
+                            <Radio disabled={true} value={MESSAGE_TYPE.AUDIO}>语音</Radio>
+                            <Radio disabled={conversation_type===CONVERSATION_TYPE.READING} value={MESSAGE_TYPE.PICTURE}>绘画</Radio>
                         </Radio.Group>
                     </div>
 
@@ -162,7 +199,7 @@ const ConversationSettingModal = ({
                             ))}
                         </Select>
                     </div>
-                    {response_type === "reading" && (
+                    {conversation_type === CONVERSATION_TYPE.READING && (
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2">
                                 Document
@@ -178,15 +215,15 @@ const ConversationSettingModal = ({
                                     </Option>
                                 ))}
                             </Select>
-                            { !document&&<Upload {...props}>
+                            <Upload documents to ready {...props}>
                                 <Button >Click to Upload</Button>
-                            </Upload>}
+                            </Upload>
                         </div>
 
 
 
                     )}
-                    <div className="mb-4">
+                    {conversation_type===CONVERSATION_TYPE.CHAT&&response_type==MESSAGE_TYPE.TEXT&&<div className="mb-4">
                         <label
                             className="block text-gray-700 text-sm font-bold mb-2"
                             htmlFor="dropdown"
@@ -209,7 +246,7 @@ const ConversationSettingModal = ({
                                 </Option>
                             ))}
                         </Select>
-                    </div>
+                    </div>}
                     <div className="mb-4">
                         <label
                             className="block text-gray-700 text-sm font-bold mb-2"
@@ -225,7 +262,7 @@ const ConversationSettingModal = ({
                             type="text"
                         />
                     </div>
-                    <div className="mb-6">
+                    {conversation_type===CONVERSATION_TYPE.CHAT&&response_type==MESSAGE_TYPE.TEXT&&<div className="mb-6">
                         <label
                             className="block text-gray-700 text-sm font-bold mb-2"
                             htmlFor="textarea"
@@ -238,7 +275,7 @@ const ConversationSettingModal = ({
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-60"
                             id="textarea"
                         ></textarea>
-                    </div>
+                    </div>}
                     <div className="flex items-center justify-end">
                         <button
                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
