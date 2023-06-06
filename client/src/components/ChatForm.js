@@ -71,7 +71,7 @@ const ChatForm = ({ saveMessagesToDB, setNewReplyMessage }) => {
             conversationId: currentConversation.id,
             content: "Thinking...",
         });
-        sendMessage("message", requestBody);
+        sendMessage("message", JSON.stringify(requestBody));
     };
 
 
