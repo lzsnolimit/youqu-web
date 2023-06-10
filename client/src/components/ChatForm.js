@@ -81,6 +81,7 @@ const ChatForm = ({ saveMessagesToDB, setNewReplyMessage }) => {
             <Row className="chat-footer">
                 <Col sm={18} xs={14}>
                     <Input.TextArea
+
                         disabled={currentConversation == null}
                         ref={inputRef}
                         value={inputMessage}

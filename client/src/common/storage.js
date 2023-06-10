@@ -1,8 +1,11 @@
 import {clear, createStore} from 'idb-keyval';
+import useLocalStorage, {SelectedConversation} from "../hooks/useLocalStorage";
 
 const messagesStore = new createStore("messages", "messages");
 
 const conversationsStore = new createStore('conversations', 'conversations');
+
+
 
 export async function clearAllMessages() {
     try {

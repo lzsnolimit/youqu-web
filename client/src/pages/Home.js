@@ -28,11 +28,13 @@ const Home = () => {
 
     useEffect(() => {
         //convert conversation to string and save in localstorage
-        console.log("currentConversation changed to: " + JSON.stringify(currentConversation))
-        if (currentConversation == null)
+
+        if (currentConversation == null){
             console.log("currentConversation is null")
             removeItem();
             return
+        }
+        console.log("currentConversation changed to: " + JSON.stringify(currentConversation))
         setStoreConversation(JSON.stringify(currentConversation));
     }, [currentConversation])
 
