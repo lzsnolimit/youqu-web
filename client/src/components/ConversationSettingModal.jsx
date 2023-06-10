@@ -211,7 +211,7 @@ const ConversationSettingModal = ({
                                 style={{width: "100%"}}
                             >
                                 {user && user.available_documents.map((doc, index) => (
-                                    <Option key={index} value={doc.id}>
+                                    <Option key={index} value={doc.id} selected={doc.id === document}>
                                         {doc.title}
                                     </Option>
                                 ))}

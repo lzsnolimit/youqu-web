@@ -20,6 +20,7 @@ function ConversationIcons({conversation, onDelete, isSelected, isSettingsModalV
 
   const onSettingConversation = (e) => {
     e.stopPropagation();
+    setIsNewConversation(false)
     setIsSettingsModalVisible(true)
   }
 
