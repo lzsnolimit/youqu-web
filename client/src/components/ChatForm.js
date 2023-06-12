@@ -87,7 +87,7 @@ const ChatForm = ({ saveMessagesToDB, setNewReplyMessage,newReplyMessage }) => {
                 <Col sm={18} xs={14}>
                     <Input.TextArea
 
-                        disabled={currentConversation == null}
+                        disabled={(currentConversation == null)||(newReplyMessage!=null)}
                         ref={inputRef}
                         value={inputMessage}
                         onChange={(event) => {
