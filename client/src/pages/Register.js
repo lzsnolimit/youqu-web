@@ -59,8 +59,8 @@ const Register = () => {
             return false;
         }
         //if password is less than 8 characters or not combine of letters and numbers
-        if (password.length < 8 || !password.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)) {
-            setErrorMessage('密码至少8位，且包含数字和字母');
+        if (password.length < 8) {
+            setErrorMessage('密码至少8位');
             return false;
         }
         //if username is less than 5 characters

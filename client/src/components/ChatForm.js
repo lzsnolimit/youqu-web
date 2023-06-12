@@ -4,7 +4,7 @@ import {MESSAGE_TYPE} from "../common/constant";
 import {ulid} from "ulid";
 import {ChatContext} from "../context/chatContext";
 
-const ChatForm = ({ saveMessagesToDB, setNewReplyMessage }) => {
+const ChatForm = ({ saveMessagesToDB, setNewReplyMessage,newReplyMessage }) => {
     const {
         currentConversation,
         sendMessage,
@@ -23,6 +23,11 @@ const ChatForm = ({ saveMessagesToDB, setNewReplyMessage }) => {
             send();
         }
     };
+
+    const stop= async () => {
+        console.log('stop')
+        sendMessage('stop', {});
+    }
 
     const send = () => {
         const message = {
@@ -77,7 +82,7 @@ const ChatForm = ({ saveMessagesToDB, setNewReplyMessage }) => {
 
 
     return (
-        <form className="form">
+            <form className="form">
             <Row className="chat-footer">
                 <Col sm={18} xs={14}>
                     <Input.TextArea
@@ -102,14 +107,24 @@ const ChatForm = ({ saveMessagesToDB, setNewReplyMessage }) => {
                     />
                 </Col>
                 <Col sm={4} xs={6} style={{ padding: ".5rem" }}>
-                    <Button
+                    {newReplyMessage?<Button
+                        type="submit"
+                        className="chatview__btn-send"
+                        onClick={stop}
+                    >
+                        Stop
+                    </Button>:<Button
                         type="submit"
                         className="chatview__btn-send"
                         disabled={!inputMessage}
                         onClick={send}
                     >
                         Send
-                    </Button>
+                    </Button>}
+
+
+
+
                 </Col>
             </Row>
         </form>
