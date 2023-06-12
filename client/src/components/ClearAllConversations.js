@@ -1,11 +1,14 @@
 import {MdClear} from 'react-icons/md';
 import {clearAllMessages} from "../common/storage";
+import useLocalStorage, {SelectedConversation} from "../hooks/useLocalStorage";
 
 
 const ClearAllConversations = () => {
+    const [storeConversation, setStoreConversation,removeItem] = useLocalStorage(SelectedConversation, '');
 
     const clearAll = async () => {
         await clearAllMessages()
+        await removeItem()
         window.location.reload(true)
     }
     return (
