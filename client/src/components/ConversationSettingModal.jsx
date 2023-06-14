@@ -115,6 +115,8 @@ const ConversationSettingModal = ({
             promote: promote,
             response_type: response_type,
             model: model,
+            user_name: user.user_name,
+            user_id: user.user_id,
             document: document,
             conversation_type: conversation_type,
         };
